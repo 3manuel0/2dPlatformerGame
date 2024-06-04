@@ -1,12 +1,14 @@
-// #include"include/raylib.h"
-#include"raylib.h"
+#include"include/raylib.h"
+// #include"raylib.h"
 #include "2D.h"
-#include <stdio.h>
 
 int main(){
-    Player player = createPlayer((Rectangle){0, 100, 120, 120}, idling, Right, (Vector2){64, 43},(Vector2){0 , 0});
+    // creation of a player
+    Player player = createPlayer((Rectangle){0, 100, 120, 120}, (Vector2){64, 43},(Vector2){0 , 0});
     Rectangle spriteRect = player.playerRect;
+    // initiat camera
     Camera2D camera = {{0, 0}, {0, 1.0}, 0, 1.0};
+    // platforms
     Rectangle platforms[] = {
         {0,550,400, 400},
         {600,650,400, 400},
@@ -19,12 +21,14 @@ int main(){
         {6800,550,1000, 400},
         {8200,550,1000, 400},    
     };
+    // player speed on the x axis 
     player.velocity.x = 12;
     InitWindow(screenWidth, screenHeight, "2D");
-    InitAudioDevice();     
+    // initiate audio device
+    InitAudioDevice();
+    // set fps
     SetTargetFPS(60);
-    Image myImage = LoadImage("assets/idle/Warrior_Idle_sheet.png");
-    ExportImageAsCode(myImage, "samir.c"); 
+    // creating animations
     Animation idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 6);
     Animation run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 8);
     Animation jump = createAnimation(LoadTexture( "assets/Jump/Warrior_Jump_sheet.png"), LoadTexture( "assets/Jump/Warrior_Jump_sheet_left.png"), 3);
@@ -42,32 +46,26 @@ int main(){
     U8 frameIndex = 0;
     U8 numberOfFrames = 0;
     U8 oriontation = 0;
+    U8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
     f32 gravity = 0.5; 
     bool onGround = false;
+    SetMasterVolume(0.3);
     // game loop
     while (!WindowShouldClose())
     {   
         UpdateMusicStream(mainSong);
-        // printf("%lld", sizeof(i16));
-        U32 platformsCount = sizeof(platforms) / sizeof(Rectangle);
-        SetMasterVolume(0.3);
-        // printf("sizeof(platforms): %d sizeof(Rectangle): %d number of platforms: %d \n",sizeof(platforms), sizeof(Rectangle), sizeof(platforms)/ sizeof(Rectangle));
         onGround = false;
         player.velocity.y += gravity;
         player.playerRect.y += player.velocity.y; 
         for(U16 i = 0; i <  platformsCount; i++){
-            // CheckCollisionPointRec((Vector2){player.playerRect.x, player.playerRect.y + player.playerRect.height}, platforms[i]); 
-            // printf("collision = %d index =%d\n", CheckCollisionPointLine((Vector2){player.playerRect.x + 20, player.playerRect.y + player.playerRect.height}, (Vector2){platforms[i].x, platforms[i].y}, (Vector2){platforms[i].x+ platforms[i].width, platforms[i].y}, 2), i);
+            // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
             if(CheckCollisionPointLine((Vector2){player.playerRect.x + 80, player.playerRect.y + player.playerRect.height}, (Vector2){platforms[i].x, platforms[i].y}, (Vector2){platforms[i].x+ platforms[i].width, platforms[i].y}, 10) || CheckCollisionPointLine((Vector2){player.playerRect.x + 40, player.playerRect.y + player.playerRect.height}, (Vector2){platforms[i].x, platforms[i].y}, (Vector2){platforms[i].x+ platforms[i].width, platforms[i].y}, 10)){
-            // if(CheckCollisionPointRec((Vector2){player.playerRect.x + 20, player.playerRect.y + player.playerRect.height}, platforms[i]) || CheckCollisionPointRec((Vector2){player.playerRect.x + 70, player.playerRect.y + player.playerRect.height}, platforms[i])){
                 onGround = true;
                 player.velocity.y = 0;
                 player.playerRect.y = platforms[i].y - spriteRect.height;
             }
         }
-
-        // printf("%f\n", player.playerRect.y);
-        player.velocity.x = 12;
+        // if player fell more than 900 of the screen to bring him back to the start
         if(player.playerRect.y > 900){
             player.playerRect.y = 100;
             player.playerRect.x = 0;
@@ -75,6 +73,7 @@ int main(){
             player.velocity.x = 0;
         } 
 
+        // frame delay to slow the fast animation pace
         frameDelayCounter ++;
         if(framDelay == frameDelayCounter){
             frameDelayCounter = 0;
@@ -84,6 +83,7 @@ int main(){
 
         numberOfFrames = idle.numOfFrames;
         currentTexture = oriontation == 0 ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
+        
         if(IsKeyDown(KEY_D)){
             if(player.playerRect.x >= screenWidth / 2){
                 camera.offset.x -= player.velocity.x;
@@ -120,10 +120,7 @@ int main(){
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
         BeginMode2D(camera);
         for(U16 i = 0; i < platformsCount; i++){
@@ -131,25 +128,25 @@ int main(){
             DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
         }
         // DrawRectangleRec(player.playerRect, BLACK);
-        DrawRectangle(player.playerRect.x + 40, player.playerRect.y + player.playerRect.height, 2, 2, BLACK);
-        DrawRectangle(player.playerRect.x + 80, player.playerRect.y + player.playerRect.height, 2, 2, BLACK);
+        // DrawRectangle(player.playerRect.x + 40, player.playerRect.y + player.playerRect.height, 2, 2, BLACK);
+        // DrawRectangle(player.playerRect.x + 80, player.playerRect.y + player.playerRect.height, 2, 2, BLACK);
         DrawTexturePro(currentTexture,(Rectangle) {player.spriteSize.x* frameIndex , 0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
         // making the background white
         EndDrawing();
     }
     UnloadMusicStream(mainSong);   // Unload music stream buffers from RAM
-    UnloadTexture(terrain);  // Unload background texture
-    UnloadTexture(idle.leftAnimationTexture);   // Unload midground texture
-    UnloadTexture(idle.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(run.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(run.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(jump.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(jump.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(fall.rightAnimationTexture);   // Unload midground texture
-    UnloadTexture(fall.leftAnimationTexture);   // Unload midground texture
-    UnloadTexture(bg);   // Unload midground texture
-    UnloadTexture(bg1);   // Unload midground texture
-    UnloadTexture(bg2);   // Unload midground texture
+    UnloadTexture(terrain);  // Unload terrain texture
+    UnloadTexture(idle.leftAnimationTexture);   // Unload animation texture
+    UnloadTexture(idle.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(run.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(run.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(jump.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(jump.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(fall.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(fall.leftAnimationTexture);   // Unload animation texture
+    UnloadTexture(bg);   // Unload bg texture
+    UnloadTexture(bg1);   // Unload bg1 texture
+    UnloadTexture(bg2);   // Unload bg2 texture
     CloseAudioDevice(); 
     CloseWindow();
     return 0;
