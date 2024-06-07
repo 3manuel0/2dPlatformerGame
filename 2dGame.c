@@ -1,5 +1,5 @@
-#include"include/raylib.h"
-// #include"raylib.h"
+// #include"include/raylib.h"
+#include"raylib.h"
 #include "2D.h"
 
 int main(){
@@ -70,9 +70,8 @@ int main(){
             player.playerRect.y = 100;
             player.playerRect.x = 0;
             camera.offset.x = 0;
-            player.velocity.x = 0;
         } 
-
+        player.velocity.x = 12;
         // frame delay to slow the fast animation pace
         frameDelayCounter ++;
         if(framDelay == frameDelayCounter){
