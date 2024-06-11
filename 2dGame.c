@@ -71,7 +71,6 @@ int main(){
             player.playerRect.x = 0;
             camera.offset.x = 0;
         } 
-        player.velocity.x = 12;
         // frame delay to slow the fast animation pace
         frameDelayCounter ++;
         if(framDelay == frameDelayCounter){
