@@ -1,6 +1,6 @@
 #include "2D.h"
-// #include"include/raylib.h"
-#include "raylib.h"
+#include"include/raylib.h"
+// #include "raylib.h"
 
 // function to create/return a player
 Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
@@ -8,15 +8,26 @@ Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
       .playerRect = playerRect,
       .spriteSize = spritSize,
       .velocity = velocity,
+      .frameIndex = 0,
+      .healthPoints = 1000,
+      .orientation = RIGHT,
   };
 }
 
 // function that creates/returns an animation
-Animation createAnimation(Texture2D rightAnimationTexture,
-                          Texture2D leftAnimationTexture, U8 numOfFrames) {
+Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, U8 numOfFrames) {
   return (Animation){
       .rightAnimationTexture = rightAnimationTexture,
       .leftAnimationTexture = leftAnimationTexture,
       .numOfFrames = numOfFrames,
   };
 }
+
+void getDamage(U16 *hp, U16 dmg){
+    if(*hp > 0){
+      *hp -= dmg;
+    }else if(*hp < dmg){
+      *hp -= *hp;
+    }
+}
+

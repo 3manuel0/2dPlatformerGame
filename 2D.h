@@ -26,17 +26,32 @@ typedef struct Animation {
   unsigned char numOfFrames;
 } Animation;
 
+typedef enum Orientation{
+  RIGHT, 
+  LEFT,
+}Orientation;
+
 // player struct
 typedef struct Player {
   Rectangle playerRect;
   Vector2 spriteSize;
   Vector2 velocity;
+  U8 frameIndex;
+  U16 healthPoints;
+  Texture2D currentTexture;
+  Orientation orientation;
 } Player;
+
+typedef Player Enemy;
+
 
 // declaration of a function that create/return a player
 Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity);
 
 // declaration of a function that creates/returns an animation
-Animation createAnimation(Texture2D rightAnimationTexture,
-                          Texture2D leftAnimationTexture, U8 numOfFrames);
+Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, U8 numOfFrames);
+
+// calculate and display dmg
+void getDamage(U16 *hp, U16 dmg);
+
 #endif
