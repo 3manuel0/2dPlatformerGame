@@ -1,7 +1,7 @@
 #ifndef TWOD_H_
 #define TWOD_H_
-// #include"include/raylib.h"
-#include "raylib.h"
+#include"include/raylib.h"
+// #include "raylib.h"
 #include <stdbool.h>
 
 #define screenWidth 1280
@@ -27,7 +27,7 @@ typedef struct Animation {
 } Animation;
 
 typedef enum Orientation{
-  RIGHT, 
+  RIGHT = 0, 
   LEFT,
 }Orientation;
 

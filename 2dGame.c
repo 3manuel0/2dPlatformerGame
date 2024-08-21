@@ -1,5 +1,5 @@
-// #include"include/raylib.h"
-#include"raylib.h"
+#include"include/raylib.h"
+// #include"raylib.h"
 #include "2D.h"
 
 int main(){
@@ -25,7 +25,11 @@ int main(){
         {4400,650,800, 400},
         {5400,650,1000, 400},
         {6800,550,1000, 400},
-        {8200,550,1000, 400},    
+        {8200,550,1000, 400},
+        {9500,550,1000, 400},
+        {10500,550,1000, 400},
+        {11500,550,1000, 400},
+        {12500,550,1000, 400},    
     };
     // player speed on the x axis 
     player.velocity.x = 12;
@@ -99,7 +103,6 @@ int main(){
 
         numberOfFrames = idle.numOfFrames;
         player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
-        
         if(IsKeyDown(KEY_D)){
             if(player.playerRect.x >= screenWidth / 2){
                 camera.offset.x -= player.velocity.x;
@@ -143,6 +146,7 @@ int main(){
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
         DrawRectangleRec(healthBar, RAYWHITE);
@@ -160,7 +164,12 @@ int main(){
         DrawTexturePro(EnemyCurrentTexture,(Rectangle) {enemy.spriteSize.x* enemy.frameIndex , 0, enemy.spriteSize.x, enemy.spriteSize.y}, enemy.playerRect,(Vector2){0, 0}, 0, WHITE);
         // drawing player 
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-        // making the background white
+         if(player.healthPoints <= 0){
+            DrawRectangleRec((Rectangle){0, 0, screenWidth - camera.offset.x, screenHeight - camera.offset.y}, (Color){255, 255, 255, 127});
+            DrawText("Game Over", screenWidth/2 - camera.offset.x, screenHeight/2 - camera.offset.y, 20, BLACK);
+            player.velocity = (Vector2){0, 0};
+            player.currentTexture = idle.rightAnimationTexture;     
+        }
         EndDrawing();
     }
     UnloadMusicStream(mainSong);   // Unload music stream buffers from RAM
