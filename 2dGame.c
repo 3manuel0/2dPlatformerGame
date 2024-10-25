@@ -1,6 +1,10 @@
-#include"include/raylib.h"
-// #include"raylib.h"
 #include "2D.h"
+#ifdef linux
+#include"raylib.h"
+#endif
+#ifdef _WIN32
+#include "raylib.h"
+#endif
 
 int main(){
     // creation of a player

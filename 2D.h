@@ -1,7 +1,11 @@
 #ifndef TWOD_H_
 #define TWOD_H_
-#include"include/raylib.h"
-// #include "raylib.h"
+#ifdef linux
+#include"raylib.h"
+#endif
+#ifdef _WIN32
+#include "raylib.h"
+#endif
 #include <stdbool.h>
 
 #define screenWidth 1280

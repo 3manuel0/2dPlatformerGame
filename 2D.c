@@ -1,6 +1,11 @@
 #include "2D.h"
-#include"include/raylib.h"
-// #include "raylib.h"
+#ifdef linux
+#include"raylib.h"
+#endif
+#ifdef _WIN32
+#include "raylib.h"
+#endif
+
 
 // function to create/return a player
 Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
