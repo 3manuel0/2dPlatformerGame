@@ -1,15 +1,16 @@
 #ifndef TWOD_H_
 #define TWOD_H_
-#ifdef linux
 #include"raylib.h"
+#ifdef linux
 #endif
 #ifdef _WIN32
 #include "raylib.h"
 #endif
 #include <stdbool.h>
 
-#define screenWidth 1280
-#define screenHeight 720
+#define Gravity 20.5f
+#define screenWidth 1280.0f
+#define screenHeight 720.0f
 
 // redefining types
 typedef unsigned char U8;
