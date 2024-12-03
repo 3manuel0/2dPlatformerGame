@@ -21,7 +21,7 @@ let currentPressedKeyState = new Set();
 let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
 let blured = false;
-
+let audio = undefined;
 const str_len = (mem, str_ptr) => {
   let len = 0;
   while (mem[str_ptr] != 0) {
@@ -37,9 +37,9 @@ const get_str = (str_ptr) => {
   const str_bytes = new Uint8Array(buffer, str_ptr, len);
   return new TextDecoder().decode(str_bytes);
 };
-const importObject = {
-  my_namespace: { imported_func: (arg) => console.log(arg) },
-};
+// const importObject = {
+//   my_namespace: { imported_func: (arg) => console.log(arg) },
+// };
 WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   env: make_environment({
     InitWindow: (width, height, str_ptr) => {
@@ -53,11 +53,9 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       prevPressedKeyState = new Set(currentPressedKeyState);
     },
     GetScreenWidth: () => {
-      console.log(ctx.width);
       return canvas.width;
     },
     GetScreenHeight: () => {
-      console.log(ctx.height);
       return canvas.height;
     },
     ClearBackground: (color_ptr) => {
@@ -102,7 +100,6 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       img.src = path;
       // console.log(img.naturalWidth, img);
       images.push(img);
-      console.log(result, path);
       result[0] = images.indexOf(img);
       // console.log(result, img.naturalWidth, img.naturalHeight);
       // TODO: get the true width and height of the image
@@ -148,12 +145,19 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // console.log(sx, sy, dx, dy);
     },
     LoadMusicStream: (ptr, filePath_ptr) => {
-      console.log(get_str(filePath_ptr), ptr);
+      audio = new Audio(get_str(filePath_ptr));
     },
     UpdateMusicStream: (musicPtr) => {
-      // console.log(musicPtr);
+      audio.play();
     },
-    PlayMusicStream: () => {},
+    SetMasterVolume: (volume) => {
+      audio.volume = volume;
+      console.log(volume);
+    },
+    PlayMusicStream: (ptr) => {
+      // audio.play();
+      audio.loop = true;
+    },
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;

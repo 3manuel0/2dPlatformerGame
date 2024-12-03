@@ -35,8 +35,8 @@ Animation jump = {0};
 Animation fall = {0};
 Animation attack = {0};
 U8 numberOfFrames = 0;
-U8 framDelay = 5;
-U8 frameDelayCounter = 0;
+// f32 framDelay = 0;
+f32 frameDelayCounter = 0;
 Rectangle healthBar ;
 Rectangle healthPoints ;
 Color hpColor ;
@@ -69,6 +69,7 @@ void GameInit(){
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
     SetTargetFPS(60);
+    SetMasterVolume(0.3);
 }
 
 void GameFrame(){
@@ -80,12 +81,14 @@ void GameFrame(){
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
     // frame delay to slow the fast animation pace
-    frameDelayCounter ++;
-    if(framDelay == frameDelayCounter){
+    // frameDelayCounter ++;
+    if(player.frameIndex >= numberOfFrames){
+        // player.frameIndex %= numberOfFrames;
+        player.frameIndex = 0;
         frameDelayCounter = 0;
-        player.frameIndex %= numberOfFrames;
-        player.frameIndex ++;
     }
+    frameDelayCounter += 10 * dt;
+    player.frameIndex = (U8)frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
     if (numberOfFrames > idle.numOfFrames){
@@ -142,7 +145,8 @@ void GameFrame(){
             player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         }
         if(IsKeyDown(KEY_W) && onGround){
-            player.velocity.y -= 12;
+            // player.velocity.y = 0;
+            player.velocity.y -= 600 * dt;
             onGround = false;
         }
         if(!onGround){
@@ -182,7 +186,7 @@ void GameFrame(){
         // DrawRectangleRec(platforms[i], BLUE);
 
     }
-    DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
+    // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
     EndDrawing();
 }
@@ -197,7 +201,7 @@ int main(){
     {   
 
         GameFrame();
-        printf("%f\t%f\t%f\n", player.velocity.y, screenWidth / 2, platforms[0].x);
+        printf("%f\t%f\t%d\n", player.velocity.y, frameDelayCounter, player.frameIndex);
     }
 
     // De-Initialization

@@ -8,7 +8,7 @@
 #endif
 #include <stdbool.h>
 
-#define Gravity 20.5f
+#define Gravity 16.5f
 #define screenWidth 1280.0f
 #define screenHeight 720.0f
 
