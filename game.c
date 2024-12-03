@@ -1,5 +1,8 @@
 #include"raylib.h"
 #include "game.h"
+#ifndef PLATFORM_WEB
+#include <stdio.h>
+#endif
 
 Rectangle platforms[] = {
         {0,550,400, 400},
@@ -48,7 +51,7 @@ void GameInit(){
     InitAudioDevice();
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
-    player = createPlayer((Rectangle){0, -9000, 120, 120}, (Vector2){64, 43},(Vector2){0 , 0});
+    player = createPlayer((Rectangle){0, -200, 120, 120}, (Vector2){64, 43},(Vector2){0 , 0});
     // creating animations
     idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
     run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
@@ -61,21 +64,22 @@ void GameInit(){
     bg2 = LoadTexture("assets/bg/BG_3.png");
     playerIcon = LoadTexture("assets/icons/Warrior_icont.png");
     spriteRect = player.playerRect;
-    player.velocity.x = 10;
     spriteRect = player.playerRect;
     healthBar = (Rectangle) {34, 10, 300, 30};
     healthPoints = (Rectangle) {healthBar.x, healthBar.y, 300, healthBar.height};
     hpColor = GREEN;
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
-    SetTargetFPS(60);
+    onGround = false;
+    // SetTargetFPS(60);
     SetMasterVolume(0.3);
 }
 
 void GameFrame(){
     UpdateMusicStream(mainSong);
-    onGround = false;
     float dt = GetFrameTime();
+    printf("%f\n", dt);
+    player.velocity.x = 500 * dt;
     player.velocity.y += Gravity * dt;
     player.playerRect.y += player.velocity.y;
     player.currentTexture = idle.rightAnimationTexture;
@@ -144,10 +148,12 @@ void GameFrame(){
             numberOfFrames = attack.numOfFrames;
             player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         }
-        if(IsKeyDown(KEY_W) && onGround){
-            // player.velocity.y = 0;
-            player.velocity.y -= 600 * dt;
-            onGround = false;
+        if(onGround){
+            if(IsKeyDown(KEY_W)){
+
+                player.velocity.y -= 600 * dt;
+                onGround = false;
+            }
         }
         if(!onGround){
             numberOfFrames = jump.numOfFrames;
@@ -201,7 +207,7 @@ int main(){
     {   
 
         GameFrame();
-        printf("%f\t%f\t%d\n", player.velocity.y, frameDelayCounter, player.frameIndex);
+        // printf("%f\t%f\t%d\n", player.velocity.y, frameDelayCounter, player.frameIndex);
     }
 
     // De-Initialization

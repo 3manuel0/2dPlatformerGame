@@ -158,6 +158,13 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // audio.play();
       audio.loop = true;
     },
+    printf: (str_ptr, ...args) => {
+      const buffer = wasm.instance.exports.memory.buffer;
+      const str = get_str(str_ptr);
+      const [arg1] = new Float64Array(buffer, args[0], 1);
+      console.log(str);
+      console.log(args.length, arg1);
+    },
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -182,6 +189,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
 }).then((w) => {
   wasm = w;
   canvas = document.getElementById("canvas");
+  let fps = document.getElementById("fps");
   ctx = canvas.getContext("2d");
 
   const { GameInit, GameFrame } = w.instance.exports;
@@ -201,7 +209,11 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     window.requestAnimationFrame(next);
   };
   const next = (timestamp) => {
-    dt = (timestamp - previous) / 1000.0;
+    dt =
+      (timestamp - previous) / 1000.0 > 1 / 60
+        ? 1 / 60
+        : (timestamp - previous) / 1000.0;
+    fps.innerHTML = 1 / dt;
     previous = timestamp;
     if (!blured) {
       GameFrame();
