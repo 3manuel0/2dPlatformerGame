@@ -213,7 +213,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       (timestamp - previous) / 1000.0 > 1 / 60
         ? 1 / 60
         : (timestamp - previous) / 1000.0;
-    fps.innerHTML = 1 / dt;
+    fps.innerHTML = Math.round(1 / dt);
     previous = timestamp;
     if (!blured) {
       GameFrame();
