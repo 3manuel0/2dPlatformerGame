@@ -46,6 +46,7 @@ Color hpColor ;
 U16  fullHp ;
 f32 hpConv ;
 Music mainSong = {0};
+
 void GameInit(){
     InitWindow(screenWidth, screenHeight, "my game in wasm");
     InitAudioDevice();
@@ -83,7 +84,7 @@ void GameFrame(){
     player.playerRect.y += player.velocity.y;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
-    // printf("%f\n%f\n%d", dt,player.playerRect.y , platformsCount);
+    // printf("%f\n%f\n%d",dt ,player.playerRect.y , platformsCount);
     // frame delay to slow the fast animation pace
     // frameDelayCounter ++;
     if(player.frameIndex >= numberOfFrames){
@@ -91,7 +92,7 @@ void GameFrame(){
         player.frameIndex = 0;
         frameDelayCounter = 0;
     }
-    frameDelayCounter += 10 * dt;
+    frameDelayCounter += 9 * dt;
     player.frameIndex = (U8)frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
@@ -133,8 +134,11 @@ void GameFrame(){
             numberOfFrames = run.numOfFrames;
         }else if(IsKeyDown(KEY_A)){
             if(player.playerRect.x >= (screenWidth / 2) || platforms[0].x >= -5){
-                player.playerRect.x -= player.velocity.x ;
-                player.orientation = LEFT;
+                // printf("%f\n",player.playerRect.x);
+                if(player.playerRect.x +  (player.playerRect.width / 2) - 20 >= 0){
+                    player.playerRect.x -= player.velocity.x ;
+                    player.orientation = LEFT;
+                }
             } else {
                 player.orientation = LEFT;
                 camera.offset.x += player.velocity.x;
@@ -195,6 +199,7 @@ void GameFrame(){
     }
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
+    DrawRectangle(player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 10, 10, BLUE);
     EndDrawing();
 }
 
@@ -248,3 +253,9 @@ void getDamage(U16 *hp, U16 dmg){
       *hp -= *hp;
     }
 }
+
+bool checkPlayerCollisionWithPlatform (){
+    return true;
+}
+
+

@@ -190,7 +190,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         }
       }
       // const [arg1, arg2] = new Float64Array(buffer, args_ptrs[0], 2);
-      console.log(args);
+      console.log(...args);
     },
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
