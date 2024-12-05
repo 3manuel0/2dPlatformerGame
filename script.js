@@ -158,12 +158,39 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // audio.play();
       audio.loop = true;
     },
-    printf: (str_ptr, ...args) => {
+    printf: (str_ptr, args_ptrs) => {
       const buffer = wasm.instance.exports.memory.buffer;
       const str = get_str(str_ptr);
-      const [arg1] = new Float64Array(buffer, args[0], 1);
-      console.log(str);
-      console.log(args.length, arg1);
+      let args = [];
+      let argsIndex = 0;
+      for (let i = 0; i < str.length; i++) {
+        if (str[i] === "%") {
+          switch (str[i + 1]) {
+            case "f":
+              args.push(new Float64Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              argsIndex += 8;
+              break;
+            case "d":
+              args.push(new Int32Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              argsIndex += 4;
+              break;
+            case "u":
+              args.push(new Uint32Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              argsIndex += 8;
+              break;
+            case "s":
+              args.push(get_str(args_ptrs + argsIndex));
+              argsIndex += str_len(args_ptrs + argsIndex);
+              break;
+            case "i":
+              args.push(new Int32Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              argsIndex += 4;
+              break;
+          }
+        }
+      }
+      // const [arg1, arg2] = new Float64Array(buffer, args_ptrs[0], 2);
+      console.log(args);
     },
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
@@ -173,6 +200,17 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       let img = images[texture[0]];
       ctx.drawImage(img, dx, dy, img.width * scale, img.height * scale);
       // console.log(images[texture[0]], dx, dy, img.width * scale, img.height * scale)
+    },
+    DrawRectangleLinesEx: (rect_ptr, lineHeight, color_ptr) => {
+      const buffer = wasm.instance.exports.memory.buffer;
+      const [x, y, width, height] = new Float32Array(buffer, rect_ptr, 4);
+      const [r, g, b, a] = new Uint8Array(buffer, color_ptr, 4);
+      const color = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+      ctx.lineWidth = lineHeight;
+      ctx.strokeStyle = color;
+      ctx.rect(x, y, width, height);
+      ctx.stroke();
+      console.log(x, y, width, height, color, lineHeight);
     },
     CheckCollisionRecs: (rec1_ptr, rec2_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -191,7 +229,6 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   canvas = document.getElementById("canvas");
   let fps = document.getElementById("fps");
   ctx = canvas.getContext("2d");
-
   const { GameInit, GameFrame } = w.instance.exports;
   // console.log(addStruct(20, 12.1));
   const keyDown = (e) => {
@@ -205,15 +242,15 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   window.addEventListener("keyup", keyUp);
   const first = (timestamp) => {
     previous = timestamp;
-    ctx.imageSmoothingEnabled = false;
     window.requestAnimationFrame(next);
   };
   const next = (timestamp) => {
+    ctx.imageSmoothingEnabled = false;
     dt =
       (timestamp - previous) / 1000.0 > 1 / 60
         ? 1 / 60
         : (timestamp - previous) / 1000.0;
-    fps.innerHTML = Math.round(1 / dt);
+    fps.innerHTML = "fps: " + Math.round(1 / dt);
     previous = timestamp;
     if (!blured) {
       GameFrame();

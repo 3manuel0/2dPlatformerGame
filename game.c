@@ -1,5 +1,6 @@
 #include"raylib.h"
 #include "game.h"
+#include <stdbool.h>
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
@@ -20,8 +21,6 @@ Rectangle platforms[] = {
         {11500,550,1000, 400},
         {12500,550,1000, 400},    
 };
-
-
 U8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 Player player = {0};
 Texture2D terrain = {0};
@@ -38,6 +37,7 @@ Animation jump = {0};
 Animation fall = {0};
 Animation attack = {0};
 U8 numberOfFrames = 0;
+bool gameOver = false;
 // f32 framDelay = 0;
 f32 frameDelayCounter = 0;
 Rectangle healthBar ;
@@ -51,7 +51,7 @@ void GameInit(){
     InitAudioDevice();
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
-    player = createPlayer((Rectangle){0, -200, 120, 120}, (Vector2){64, 43},(Vector2){0 , 0});
+    player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
     // creating animations
     idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
     run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
@@ -71,19 +71,19 @@ void GameInit(){
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
     onGround = false;
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
     SetMasterVolume(0.3);
 }
 
 void GameFrame(){
     UpdateMusicStream(mainSong);
     float dt = GetFrameTime();
-    printf("%f\n", dt);
     player.velocity.x = 500 * dt;
     player.velocity.y += Gravity * dt;
     player.playerRect.y += player.velocity.y;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
+    // printf("%f\n%f\n%d", dt,player.playerRect.y , platformsCount);
     // frame delay to slow the fast animation pace
     // frameDelayCounter ++;
     if(player.frameIndex >= numberOfFrames){
@@ -102,6 +102,7 @@ void GameFrame(){
         player.playerRect.y = 100;
         getDamage(&player.healthPoints, 200);
         player.playerRect.x = 0;
+        gameOver = true;
             // camera.offset.x = 0;
     }
     for(U16 i = 0; i <  platformsCount; i++){
@@ -179,7 +180,7 @@ void GameFrame(){
     DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
     DrawRectangleRec(healthBar, RAYWHITE);
     DrawRectangleRec(healthPoints, hpColor);
-    // DrawRectangleLinesEx(healthBar, 3, GRAY);
+    DrawRectangleLinesEx(healthBar, 3, GRAY);
     DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
         // else if(IsKeyDown(KEY_E)){
         //     // numberOfFrames = attack.numOfFrames;
