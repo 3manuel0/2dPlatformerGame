@@ -42,6 +42,7 @@ bool gameOver = false;
 f32 frameDelayCounter = 0;
 Rectangle healthBar ;
 Rectangle healthPoints ;
+Rectangle hitBox;
 Color hpColor ;
 U16  fullHp ;
 f32 hpConv ;
@@ -84,6 +85,7 @@ void GameFrame(){
     player.playerRect.y += player.velocity.y;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
+    hitBox = (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 10, 10};
     // printf("%f\n%f\n%d",dt ,player.playerRect.y , platformsCount);
     // frame delay to slow the fast animation pace
     // frameDelayCounter ++;
@@ -108,7 +110,7 @@ void GameFrame(){
     }
     for(U16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
-        if(CheckCollisionRecs(player.playerRect, platforms[i])){
+        if(CheckCollisionRecs(hitBox, platforms[i])){
             onGround = true;
                 player.velocity.y = 0;
                 player.playerRect.y = platforms[i].y - spriteRect.height;
@@ -199,7 +201,7 @@ void GameFrame(){
     }
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-    DrawRectangle(player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 10, 10, BLUE);
+    // DrawRectangle(player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 10, 10, BLUE);
     EndDrawing();
 }
 
