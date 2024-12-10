@@ -10,6 +10,7 @@ function make_environment(env) {
     },
   });
 }
+let playing = false;
 let wasm;
 let canvas;
 let ctx;
@@ -22,6 +23,7 @@ let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
 let blured = false;
 let audio = undefined;
+const startingScreen = document.getElementById("strating-screen");
 const str_len = (mem, str_ptr) => {
   let len = 0;
   while (mem[str_ptr] != 0) {
@@ -242,6 +244,8 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   window.addEventListener("keyup", keyUp);
   const first = (timestamp) => {
     previous = timestamp;
+    startingScreen.style.width = canvas.width + "px";
+    startingScreen.style.height = canvas.height + "px";
     window.requestAnimationFrame(next);
   };
   const next = (timestamp) => {
@@ -252,7 +256,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         : (timestamp - previous) / 1000.0;
     fps.innerHTML = "fps: " + Math.round(1 / dt);
     previous = timestamp;
-    if (!blured) {
+    if (!blured && playing) {
       GameFrame();
     }
     window.requestAnimationFrame(next);
@@ -267,4 +271,8 @@ window.onblur = () => {
 window.onfocus = () => {
   console.log("Unblured");
   blured = false;
+};
+document.getElementById("play").onclick = () => {
+  playing = true;
+  startingScreen.style.display = "none";
 };

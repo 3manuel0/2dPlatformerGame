@@ -6,24 +6,43 @@
     <title>wasm</title>
   </head>
   <style>
+    body {
+      background-color: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      height: 100vh;
+    }
     #canvas {
-      position: absolute;
+      /* position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%); */
+      position: relative;
       border: 2px red solid;
+      position: relative;
     }
     #fps {
+      position: absolute;
       color: white;
       font-size: 1.5rem;
     }
-    body {
-      background-color: #121212;
+    #strating-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      background-color: rgba(211, 211, 211, 0.499);
+    }
+    button {
+      padding: 1rem;
     }
   </style>
   <body>
     <span id="fps"></span>
     <canvas id="canvas"></canvas>
+    <div id="strating-screen"><button id="play">play</button></div>
   </body>
   <script src="script.js"></script>
 </html>
