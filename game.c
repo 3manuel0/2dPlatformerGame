@@ -105,7 +105,7 @@ void GameFrame(){
     }
     if(player.playerRect.y > 900){
         player.playerRect.y = 100;
-        getDamage(&player.healthPoints, 200);
+        takeDamage(&player.healthPoints, 200);
         player.playerRect.x = 0;
         gameOver = true;
             // camera.offset.x = 0;
@@ -117,11 +117,6 @@ void GameFrame(){
                 player.velocity.y = 0;
                 player.playerRect.y = platforms[i].y - spriteRect.height;
         }
-    //    if(CheckCollisionPointLine((Vector2){enemy.playerRect.x + 80, enemy.playerRect.y + enemy.playerRect.height}, (Vector2){platforms[i].x, platforms[i].y}, (Vector2){platforms[i].x+ platforms[i].width, platforms[i].y}, 11) || CheckCollisionPointLine((Vector2){enemy.playerRect.x + 40, enemy.playerRect.y + enemy.playerRect.height}, (Vector2){platforms[i].x, platforms[i].y}, (Vector2){platforms[i].x+ platforms[i].width, platforms[i].y}, 11)){
-    //         // onGround = true;
-    //         enemy.velocity.y = 0;
-    //         enemy.playerRect.y = platforms[i].y - spriteRect.height;
-    //         }
     }
         if(IsKeyDown(KEY_D)){
             if(player.playerRect.x >= screenWidth / 2){
@@ -250,7 +245,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
   };
 }
 
-void getDamage(U16 *hp, U16 dmg){
+void takeDamage(U16 *hp, U16 dmg){
     if(*hp > 0){
       *hp -= dmg;
     }else if(*hp < dmg){

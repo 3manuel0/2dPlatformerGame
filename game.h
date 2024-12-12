@@ -57,6 +57,6 @@ Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity);
 Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, U8 numOfFrames);
 
 // calculate and display dmg
-void getDamage(U16 *hp, U16 dmg);
+void takeDamage(U16 *hp, U16 dmg);
 
 #endif
