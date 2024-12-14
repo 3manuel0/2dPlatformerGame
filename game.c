@@ -35,7 +35,7 @@ Animation idle = {0};
 Animation run = {0};
 Animation jump = {0};
 Animation fall = {0};
-Animation attack = {0};
+// Animation attack = {0};
 U8 numberOfFrames = 0;
 bool gameOver = false;
 // f32 framDelay = 0;
@@ -59,7 +59,7 @@ void GameInit(){
     run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
     jump = createAnimation(LoadTexture( "assets/Jump/Warrior_Jump_sheet.png"), LoadTexture( "assets/Jump/Warrior_Jump_sheet_left.png"), 2);
     fall = createAnimation(LoadTexture( "assets/Jump/Warrior_fall_sheet.png"), LoadTexture( "assets/Jump/Warrior_fall_sheet_left.png"), 2);
-    attack = createAnimation(LoadTexture( "assets/Attack/Warrior_Attack_1-sheet.png"), LoadTexture( "assets/Attack/Warrior_Attack_1-sheet_left.png"), 11);
+    // attack = createAnimation(LoadTexture( "assets/Attack/Warrior_Attack_1-sheet.png"), LoadTexture( "assets/Attack/Warrior_Attack_1-sheet_left.png"), 11);
     terrain = LoadTexture("assets/terrain/Terrain-and-Props.png");
     bg = LoadTexture("assets/bg/BG_1.png");
     bg1 = LoadTexture("assets/bg/BG_2.png");
@@ -74,7 +74,7 @@ void GameInit(){
     hpConv = healthBar.width / player.healthPoints;
     onGround = false;
     SetTargetFPS(60);
-    SetMasterVolume(0.3);
+    SetMasterVolume(0.1);
 }
 
 void GameFrame(){
@@ -148,10 +148,11 @@ void GameFrame(){
             player.currentTexture = run.leftAnimationTexture;
             numberOfFrames = run.numOfFrames;
             // player.playerRect.x -= player.velocity.x;
-        }else if(IsKeyDown(KEY_E)){
-            numberOfFrames = attack.numOfFrames;
-            player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         }
+        // else if(IsKeyDown(KEY_E)){
+        //     numberOfFrames = attack.numOfFrames;
+        //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
+        // }
         if(onGround){
             if(IsKeyDown(KEY_W)){
 
@@ -199,6 +200,7 @@ void GameFrame(){
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
     // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
+    DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
     EndDrawing();
 }
 
