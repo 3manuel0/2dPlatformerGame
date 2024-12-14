@@ -98,7 +98,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       const buffer = wasm.instance.exports.memory.buffer;
       text = get_str(text_ptr);
       const [r, g, b, a] = new Uint8Array(buffer, color_ptr, 4);
-      ctx.font = `${font_size}px grixel`;
+      ctx.font = `${font_size - 5}px grixel`;
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
       ctx.fillText(text, x, y);
     },
