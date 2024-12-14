@@ -14,12 +14,12 @@ Rectangle platforms[] = {
         {3400,650,800, 400},
         {4400,650,800, 400},
         {5400,650,1000, 400},
-        {6800,550,1000, 400},
-        {8200,550,1000, 400},
-        {9500,550,1000, 400},
-        {10500,550,1000, 400},
-        {11500,550,1000, 400},
-        {12500,550,1000, 400},    
+        {6800,650,1000, 400},
+        {8200,650,1000, 400},
+        {9500,650,4000, 400},
+        {10400,650,1000, 400},
+        {11400,650,1000, 400},
+        {12400,650,1000, 400},    
 };
 U8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 Player player = {0};
@@ -85,7 +85,7 @@ void GameFrame(){
     player.playerRect.y += player.velocity.y;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
-    hitBox = player.orientation == (Orientation)RIGHT ? 
+    hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 20, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) + 2, player.playerRect.y + player.playerRect.height - 10, 20, 10} ;
     // printf("%f\n%f\n%d",dt ,player.playerRect.y , platformsCount);
@@ -247,7 +247,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
   };
 }
 
-void takeDamage(U16 *hp, U16 dmg){
+void takeDamage(U32 *hp, U32 dmg){
     if(*hp > 0){
       *hp -= dmg;
     }else if(*hp < dmg){
@@ -255,8 +255,8 @@ void takeDamage(U16 *hp, U16 dmg){
     }
 }
 
-bool checkPlayerCollisionWithPlatform (){
-    return true;
-}
+// bool checkPlayerCollisionWithPlatform (){
+//     return true;
+// }
 
 
