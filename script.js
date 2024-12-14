@@ -264,11 +264,12 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         : (timestamp - previous) / 1000.0;
     fps.innerHTML = "FPS: " + (1 / dt).toFixed(2);
     previous = timestamp;
-    console.log(dt);
     if (!blured && playing) {
       GameFrame();
     }
-    window.requestAnimationFrame(next);
+    setTimeout(() => {
+      window.requestAnimationFrame(next);
+    }, 1000 / 60);
   };
   window.requestAnimationFrame(first);
   // console.log(w.instance.exports.memory.buffer);
