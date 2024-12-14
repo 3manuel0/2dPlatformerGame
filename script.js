@@ -22,7 +22,8 @@ let currentPressedKeyState = new Set();
 let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
 let blured = false;
-let audio = undefined;
+let audio;
+let targetFps;
 const startingScreen = document.getElementById("strating-screen");
 const str_len = (mem, str_ptr) => {
   let len = 0;
@@ -67,6 +68,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     },
     SetTargetFPS: (fps) => {
+      targetFps = fps;
       console.log(fps);
     },
     GetFrameTime: () => {
@@ -259,29 +261,29 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   const next = (timestamp) => {
     ctx.imageSmoothingEnabled = false;
     dt =
-      (timestamp - previous) / 1000.0 < 1 / 60
+      (timestamp - previous) / 1000.0 > 1 / 60
         ? 1 / 60
         : (timestamp - previous) / 1000.0;
     fps.innerHTML = "FPS: " + (1 / dt).toFixed(2);
     previous = timestamp;
-    if (!blured && playing) {
+    if (playing) {
       GameFrame();
     }
     setTimeout(() => {
       window.requestAnimationFrame(next);
-    }, 1000 / 60);
+    }, 1000 / targetFps);
   };
   window.requestAnimationFrame(first);
   // console.log(w.instance.exports.memory.buffer);
 });
-window.onblur = () => {
-  console.log("blured");
-  blured = true;
-};
-window.onfocus = () => {
-  console.log("Unblured");
-  blured = false;
-};
+// window.onblur = () => {
+//   console.log("blured");
+//   blured = true;
+// };
+// window.onfocus = () => {
+//   console.log("Unblured");
+//   blured = false;
+// };
 document.getElementById("play").onclick = () => {
   playing = true;
   startingScreen.style.display = "none";
