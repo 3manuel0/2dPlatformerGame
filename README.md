@@ -5,7 +5,16 @@ A 2D platformer game built with **Raylib** and compiled for **Linux**, **Windows
 This is just a fun personal project of mine to try and make my **Raylib Game** work on web without needing to use Emscripten as it was fun to try and implement the Raylib functions in **javascript** myself and Understand how **WASM32** works with javascript.
 Feel free to check the project and Download it respecting The **MIT License**, and The **Assets's Licences** [Read Assets Licences](#licenses).
 
-#### [Play The Game on web](https://3manuel0.github.io/2dPlatformerGame/)
+### Created Using:
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/C.svg" width="50" />
+  <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/Raylib.svg" width="50" />
+  <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/WebAssembly.svg" width="50" />
+  <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/Javascript.svg" width="50" /> 
+</p>
+
+### [Play The Game on web](https://3manuel0.github.io/2dPlatformerGame/)
 
 # Licenses:
 
