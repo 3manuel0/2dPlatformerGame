@@ -3,9 +3,13 @@
 A 2D platformer game built with **Raylib** and compiled for **Linux**, **Windows**, and **WASM**. This is a simple project, where I compiled the C code with clang for wasm without using emscripten, Inspired by  
 [Tsoding's zozlib](https://github.com/tsoding/zozlib.js) The idea is to [Program in C for WebAssembly without Emscripten](https://surma.dev/things/c-to-webassembly/) and Using it for my **Raylib Game**.
 This is just a fun personal project of mine to try and make my **Raylib Game** work on web without needing to use Emscripten as it was fun to try and implement the Raylib functions in **javascript** myself and Understand how **WASM32** works with javascript.
-Feel free to check the project and Download it respecting The **MIT License**, and The **Assets's Licences** [Read Assets Licences](#licenses)
+Feel free to check the project and Download it respecting The **MIT License**, and The **Assets's Licences** [Read Assets Licences](#licenses).
+
+#### [Play The Game on web](https://3manuel0.github.io/2dPlatformerGame/)
 
 # Licenses:
+
+######
 
 ## Raylib License:
 
