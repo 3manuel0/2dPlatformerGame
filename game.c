@@ -73,7 +73,7 @@ void GameInit(){
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
     onGround = false;
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
     SetMasterVolume(0.1);
 }
 
@@ -85,8 +85,8 @@ void GameFrame(){
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
     hitBox = player.orientation == RIGHT ? 
-        (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +10 , player.playerRect.y + player.playerRect.height - 10, 20, 10} 
-        :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) + 2, player.playerRect.y + player.playerRect.height - 10, 20, 10} ;
+        (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
+        :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
     // printf("%f\n%f\n%d",dt ,player.playerRect.y , platformsCount);
     // frame delay to slow the fast animation pace
     // frameDelayCounter ++;
@@ -95,7 +95,7 @@ void GameFrame(){
         player.frameIndex = 0;
         frameDelayCounter = 0;
     }
-    frameDelayCounter += 9 * dt;
+    frameDelayCounter += 12 * dt;
     player.frameIndex = (U8)frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
@@ -156,7 +156,7 @@ void GameFrame(){
         player.velocity.y += Gravity * dt;
         if(onGround){
             if(IsKeyDown(KEY_W)){
-                player.velocity.y -= 400;
+                player.velocity.y -= 500;
                 onGround = false;
             }
         }
@@ -198,8 +198,8 @@ void GameFrame(){
 
     }
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
-    DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
     // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
+    DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
     DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
     EndDrawing();
 }

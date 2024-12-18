@@ -261,15 +261,11 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   const next = (timestamp) => {
     ctx.imageSmoothingEnabled = false;
     dt = (timestamp - previous) / 1000.0;
-    // // < 1 / 60
-    //   ? 1 / 60
-    //   : (timestamp - previous) / 1000.0;
-    fps.innerHTML = "FPS: " + (1 / dt).toFixed(2);
     previous = timestamp;
     if (playing) {
       GameFrame();
     }
-    // setTimeout(() => {
+    fps.innerHTML = "FPS: " + (1 / dt).toFixed(2);
     window.requestAnimationFrame(next);
     // }, 1000 / targetFps);
   };
