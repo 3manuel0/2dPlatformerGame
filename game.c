@@ -73,7 +73,7 @@ void GameInit(){
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
     onGround = false;
-    SetTargetFPS(60);
+    // SetTargetFPS(60);
     SetMasterVolume(0.1);
 }
 
@@ -81,8 +81,7 @@ void GameFrame(){
     UpdateMusicStream(mainSong);
     float dt = GetFrameTime();
     player.velocity.x = 500 * dt;
-    player.velocity.y += Gravity * dt;
-    player.playerRect.y += player.velocity.y;
+    player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv; 
     hitBox = player.orientation == RIGHT ? 
@@ -113,9 +112,10 @@ void GameFrame(){
     for(U16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
+            player.velocity.y = 0;
+            player.playerRect.y = platforms[i].y - spriteRect.height;
             onGround = true;
-                player.velocity.y = 0;
-                player.playerRect.y = platforms[i].y - spriteRect.height;
+            break;
         }
     }
         if(IsKeyDown(KEY_D)){
@@ -153,10 +153,10 @@ void GameFrame(){
         //     numberOfFrames = attack.numOfFrames;
         //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         // }
+        player.velocity.y += Gravity * dt;
         if(onGround){
             if(IsKeyDown(KEY_W)){
-
-                player.velocity.y -= 600 * dt;
+                player.velocity.y -= 400;
                 onGround = false;
             }
         }
