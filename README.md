@@ -7,7 +7,7 @@ Feel free to check the project and Download it respecting The **MIT License**, a
 
 ### Created Using:
 
-<p float="left">
+<p align="left">
   <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/C.svg" width="50" />
   <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/Raylib.svg" width="50" />
   <img src="https://raw.githubusercontent.com/3manuel0/3manuel0/assets/WebAssembly.svg" width="50" />
