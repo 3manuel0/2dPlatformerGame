@@ -21,7 +21,6 @@ let prevPressedKeyState = new Set();
 let currentPressedKeyState = new Set();
 let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
-let blured = false;
 let audio;
 let targetFps;
 const startingScreen = document.getElementById("strating-screen");
@@ -260,7 +259,11 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   };
   const next = (timestamp) => {
     ctx.imageSmoothingEnabled = false;
-    dt = (timestamp - previous) / 1000.0;
+    dt =
+      (timestamp - previous) / 1000.0 > 1 / 24 // stopping delta taime from getting so big
+        ? 1 / 24 // stopping the delta time to be a max value of 1/24fps 0.04166...
+        : (timestamp - previous) / 1000.0;
+
     previous = timestamp;
     if (playing) {
       GameFrame();
@@ -272,14 +275,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   window.requestAnimationFrame(first);
   // console.log(w.instance.exports.memory.buffer);
 });
-// window.onblur = () => {
-//   console.log("blured");
-//   blured = true;
-// };
-// window.onfocus = () => {
-//   console.log("Unblured");
-//   blured = false;
-// };
+
 document.getElementById("play").onclick = () => {
   playing = true;
   startingScreen.style.display = "none";
