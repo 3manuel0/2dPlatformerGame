@@ -1,3 +1,4 @@
+// thanks to Tsoding(Alexey Kutepov) for this proxy
 function make_environment(env) {
   return new Proxy(env, {
     get(target, prop, receiver) {
@@ -10,6 +11,130 @@ function make_environment(env) {
     },
   });
 }
+
+// mapping keys to work with the raylib KeyboardKey enum
+const RAYLIB_KEY_MAPPINGS = {
+  Space: 32,
+  Quote: 39,
+  Comma: 44,
+  Minus: 45,
+  Period: 46,
+  Slash: 47,
+  Digit0: 48,
+  Digit1: 49,
+  Digit2: 50,
+  Digit3: 51,
+  Digit4: 52,
+  Digit5: 53,
+  Digit6: 54,
+  Digit7: 55,
+  Digit8: 56,
+  Digit9: 57,
+  Semicolon: 59,
+  Equal: 61,
+  KeyA: 65,
+  KeyB: 66,
+  KeyC: 67,
+  KeyD: 68,
+  KeyE: 69,
+  KeyF: 70,
+  KeyG: 71,
+  KeyH: 72,
+  KeyI: 73,
+  KeyJ: 74,
+  KeyK: 75,
+  KeyL: 76,
+  KeyM: 77,
+  KeyN: 78,
+  KeyO: 79,
+  KeyP: 80,
+  KeyQ: 81,
+  KeyR: 82,
+  KeyS: 83,
+  KeyT: 84,
+  KeyU: 85,
+  KeyV: 86,
+  KeyW: 87,
+  KeyX: 88,
+  KeyY: 89,
+  KeyZ: 90,
+  BracketLeft: 91,
+  Backslash: 92,
+  BracketRight: 93,
+  Backquote: 96,
+  Escape: 256,
+  Enter: 257,
+  Tab: 258,
+  Backspace: 259,
+  Insert: 260,
+  Delete: 261,
+  ArrowRight: 262,
+  ArrowLeft: 263,
+  ArrowDown: 264,
+  ArrowUp: 265,
+  PageUp: 266,
+  PageDown: 267,
+  Home: 268,
+  End: 269,
+  CapsLock: 280,
+  ScrollLock: 281,
+  NumLock: 282,
+  PrintScreen: 283,
+  Pause: 284,
+  F1: 290,
+  F2: 291,
+  F3: 292,
+  F4: 293,
+  F5: 294,
+  F6: 295,
+  F7: 296,
+  F8: 297,
+  F9: 298,
+  F10: 299,
+  F11: 300,
+  F12: 301,
+  F13: 302,
+  F14: 303,
+  F15: 304,
+  F16: 305,
+  F17: 306,
+  F18: 307,
+  F19: 308,
+  F20: 309,
+  F21: 310,
+  F22: 311,
+  F23: 312,
+  F24: 313,
+  F25: 314,
+  NumPad0: 320,
+  NumPad1: 321,
+  NumPad2: 322,
+  NumPad3: 323,
+  NumPad4: 324,
+  NumPad5: 325,
+  NumPad6: 326,
+  NumPad7: 327,
+  NumPad8: 328,
+  NumPad9: 329,
+  NumpadDecimal: 330,
+  NumpadDivide: 331,
+  NumpadMultiply: 332,
+  NumpadSubtract: 333,
+  NumpadAdd: 334,
+  NumpadEnter: 335,
+  NumpadEqual: 336,
+  ShiftLeft: 340,
+  ControlLeft: 341,
+  AltLeft: 342,
+  MetaLeft: 343,
+  ShiftRight: 344,
+  ControlRight: 345,
+  AltRight: 346,
+  MetaRight: 347,
+  ContextMenu: 348,
+};
+
+// variables
 let playing = false;
 let wasm;
 let canvas;
@@ -24,6 +149,8 @@ let player = { x: 0, y: 0 };
 let audio;
 let targetFps;
 const startingScreen = document.getElementById("strating-screen");
+
+// getting Cstring length in memory
 const str_len = (mem, str_ptr) => {
   let len = 0;
   while (mem[str_ptr] != 0) {
@@ -32,6 +159,8 @@ const str_len = (mem, str_ptr) => {
   }
   return len;
 };
+
+// getting a Cstring from wasm memory
 const get_str = (str_ptr) => {
   const buffer = wasm.instance.exports.memory.buffer;
   const mem = new Uint8Array(buffer);
@@ -39,10 +168,10 @@ const get_str = (str_ptr) => {
   const str_bytes = new Uint8Array(buffer, str_ptr, len);
   return new TextDecoder().decode(str_bytes);
 };
-// const importObject = {
-//   my_namespace: { imported_func: (arg) => console.log(arg) },
-// };
+
+// Instintiating webassembly
 WebAssembly.instantiateStreaming(fetch("game.wasm"), {
+  // Raylib function in js
   env: make_environment({
     InitWindow: (width, height, str_ptr) => {
       canvas.width = width;
@@ -153,7 +282,6 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         dWidth,
         dHeight
       );
-      // console.log(sx, sy, dx, dy);
     },
     LoadMusicStream: (ptr, filePath_ptr) => {
       audio = new Audio(get_str(filePath_ptr));
@@ -166,7 +294,6 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       console.log(volume);
     },
     PlayMusicStream: (ptr) => {
-      // audio.play();
       audio.loop = true;
     },
     printf: (str_ptr, args_ptrs) => {
@@ -221,7 +348,13 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       ctx.strokeStyle = color;
       ctx.rect(x, y, width, height);
       ctx.stroke();
-      console.log(x, y, width, height, color, lineHeight);
+    },
+    DrawFPS: (x, y) => {
+      text = `${Math.floor(1 / dt)} FPS`;
+      const fontSize = 16 - 3;
+      ctx.font = `${fontSize}px grixel`;
+      ctx.fillStyle = `rgba(0, 117, 44, 1)`;
+      ctx.fillText(text, x, y + fontSize);
     },
     CheckCollisionRecs: (rec1_ptr, rec2_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -232,48 +365,58 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       return y1 + height1 >= y2 && x1 <= x2 + width2 && x1 + width1 >= x2;
     },
     IsKeyDown: (key) => {
+      // console.log(key);
       return currentPressedKeyState.has(key);
     },
   }),
 }).then((w) => {
   wasm = w;
   canvas = document.getElementById("canvas");
-  let fps = document.getElementById("fps");
   ctx = canvas.getContext("2d");
+
+  // getting these functions from wasm
   const { GameInit, GameFrame } = w.instance.exports;
-  // console.log(addStruct(20, 12.1));
+
   const keyDown = (e) => {
-    currentPressedKeyState.add(e.keyCode);
+    e.preventDefault();
+    currentPressedKeyState.add(RAYLIB_KEY_MAPPINGS[e.code]);
   };
   const keyUp = (e) => {
-    currentPressedKeyState.delete(e.keyCode);
+    currentPressedKeyState.delete(RAYLIB_KEY_MAPPINGS[e.code]);
   };
+
+  // GameInit func from wasm (see the C code for function)
   GameInit();
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
+  // first initialization for window.requestAnimationFrame
   const first = (timestamp) => {
     previous = timestamp;
     startingScreen.style.width = canvas.width + "px";
     startingScreen.style.height = canvas.height + "px";
     window.requestAnimationFrame(next);
   };
+  // function called every frame
   const next = (timestamp) => {
+    // for fixing a problem with images being blury when drawn
     ctx.imageSmoothingEnabled = false;
+    // deltatime
     dt =
       (timestamp - previous) / 1000.0 > 1 / 24 // stopping delta taime from getting so big
         ? 1 / 24 // stopping the delta time to be a max value of 1/24fps 0.04166...
         : (timestamp - previous) / 1000.0;
 
     previous = timestamp;
+
     if (playing) {
+      // draw the next frame
       GameFrame();
     }
-    fps.innerHTML = "FPS: " + (1 / dt).toFixed(2);
+
+    // continue the loop by recalling this function (next())
     window.requestAnimationFrame(next);
-    // }, 1000 / targetFps);
   };
   window.requestAnimationFrame(first);
-  // console.log(w.instance.exports.memory.buffer);
 });
 
 document.getElementById("play").onclick = () => {

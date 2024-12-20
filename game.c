@@ -109,6 +109,8 @@ void GameFrame(){
         gameOver = true;
             // camera.offset.x = 0;
     }
+    onGround = false;
+
     for(U16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
@@ -118,7 +120,7 @@ void GameFrame(){
             break;
         }
     }
-        if(IsKeyDown(KEY_D)){
+        if(IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)){
             if(player.playerRect.x >= screenWidth / 2){
                 camera.offset.x -= player.velocity.x;
                 player.orientation = RIGHT;
@@ -131,7 +133,7 @@ void GameFrame(){
             }
             player.currentTexture =run.rightAnimationTexture;
             numberOfFrames = run.numOfFrames;
-        }else if(IsKeyDown(KEY_A)){
+        }else if(IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)){
             if(player.playerRect.x >= (screenWidth / 2) || platforms[0].x >= -5){
                 // printf("%f\n",player.playerRect.x);
                 if(player.playerRect.x +  (player.playerRect.width / 2) - 20 >= 0){
@@ -155,7 +157,7 @@ void GameFrame(){
         // }
         player.velocity.y += Gravity * dt;
         if(onGround){
-            if(IsKeyDown(KEY_W)){
+            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)){
                 player.velocity.y -= 500;
                 onGround = false;
             }
@@ -201,6 +203,7 @@ void GameFrame(){
     // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
     DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
+    DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
 }
 
