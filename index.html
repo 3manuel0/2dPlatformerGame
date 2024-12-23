@@ -21,27 +21,31 @@
       justify-content: center;
       align-items: center;
       margin: 0;
+      padding: 0 0.4rem;
       height: 100vh;
     }
     #canvas {
-      /* position: absolute;
-      top: 50%;
+      position: absolute;
+      /* top: 50%;
       left: 50%;
       transform: translate(-50%, -50%); */
+      /* width: 100%; */
+      /* max-width: 90vw; */
+      aspect-ratio: 16/9;
+      width: 100%;
+      max-width: 1280px;
       position: relative;
+      /* height: 100%; */
       border: 2px red solid;
       position: relative;
-    }
-    #fps {
-      position: absolute;
-      color: white;
-      font-size: 1.5rem;
-      top: 0;
     }
     #strating-screen {
       display: flex;
       justify-content: center;
       align-items: center;
+      aspect-ratio: 16/9;
+      width: 100%;
+      max-width: 1280px;
       position: absolute;
       background-color: rgba(211, 211, 211, 0.499);
     }
@@ -53,9 +57,15 @@
       background-color: transparent;
       cursor: pointer;
     }
+    @media screen and (max-width: 900px) {
+      #canvas,
+      #strating-screen {
+        transform: rotate(90deg);
+        max-width: 100vh;
+      }
+    }
   </style>
   <body>
-    <span id="fps"></span>
     <canvas id="canvas"></canvas>
     <div id="strating-screen"><button id="play">play</button></div>
   </body>

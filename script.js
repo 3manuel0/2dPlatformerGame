@@ -378,7 +378,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   const { GameInit, GameFrame } = w.instance.exports;
 
   const keyDown = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     currentPressedKeyState.add(RAYLIB_KEY_MAPPINGS[e.code]);
   };
   const keyUp = (e) => {
@@ -392,8 +392,8 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   // first initialization for window.requestAnimationFrame
   const first = (timestamp) => {
     previous = timestamp;
-    startingScreen.style.width = canvas.width + "px";
-    startingScreen.style.height = canvas.height + "px";
+    // startingScreen.style.width = canvas.width + "px";
+    // startingScreen.style.height = canvas.height + "px";
     window.requestAnimationFrame(next);
   };
   // function called every frame
