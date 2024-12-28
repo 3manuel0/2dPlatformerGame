@@ -368,6 +368,27 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // console.log(key);
       return currentPressedKeyState.has(key);
     },
+    loadGame: (player_ptr, platfroms, camera_ptr) => {
+      const buffer = wasm.instance.exports.memory.buffer;
+      const memoryView = new DataView(buffer);
+      const [x, y, width, height] = new Float32Array(buffer, player_ptr, 4);
+      console.log(x, y, width, height, memoryView.getFloat32(player_ptr, true));
+      memoryView.setFloat32(player_ptr, localStorage.getItem("playerX"), true);
+      memoryView.setFloat32(
+        player_ptr + 4,
+        localStorage.getItem("playerY"),
+        true
+      );
+      memoryView.setFloat32(camera_ptr, localStorage.getItem("cameraX"), true);
+    },
+    saveGame: (player_ptr, platfroms, pcount, camera_ptr) => {
+      const buffer = wasm.instance.exports.memory.buffer;
+      const [x, y, width, height] = new Float32Array(buffer, player_ptr, 4);
+      const [camx, camy] = new Float32Array(buffer, camera_ptr, 2);
+      localStorage.setItem("playerX", x);
+      localStorage.setItem("playerY", y);
+      localStorage.setItem("cameraX", camx);
+    },
   }),
 }).then((w) => {
   wasm = w;

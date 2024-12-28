@@ -26,6 +26,7 @@
     }
     #canvas {
       position: absolute;
+      image-rendering: pixelated;
       /* top: 50%;
       left: 50%;
       transform: translate(-50%, -50%); */
@@ -57,13 +58,13 @@
       background-color: transparent;
       cursor: pointer;
     }
-    @media screen and (max-width: 900px) {
+    /* @media screen and (max-width: 900px) {
       #canvas,
       #strating-screen {
         transform: rotate(90deg);
-        max-width: 100vh;
-      }
-    }
+        max-width: 100vh; */
+    /* }
+    } */
   </style>
   <body>
     <canvas id="canvas"></canvas>

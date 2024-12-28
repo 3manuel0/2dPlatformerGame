@@ -54,6 +54,10 @@ void GameInit(){
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
+    loadGame(&player, platforms, &camera);
+    for(U8 i = 0; i < platformsCount; i++){
+        platforms[i].x += camera.offset.x;
+    }
     // creating animations
     idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
     run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
@@ -205,6 +209,9 @@ void GameFrame(){
     DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
+    #ifdef PLATFORM_WEB
+    saveGame(player, platforms, platformsCount, camera);
+    #endif
 }
 
 
@@ -219,12 +226,11 @@ int main(){
         GameFrame();
         // printf("%f\t%f\t%d\n", player.velocity.y, frameDelayCounter, player.frameIndex);
     }
-
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    saveGame(player, platforms, platformsCount, camera);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
-
     return 0;
 }
 #endif
@@ -258,8 +264,27 @@ void takeDamage(U32 *hp, U32 dmg){
     }
 }
 
-// bool checkPlayerCollisionWithPlatform (){
-//     return true;
-// }
+
+#ifndef PLATFORM_WEB
+void saveGame(Player player, Rectangle platforms[], U32 platformsCount, Camera2D camera){
+    printf("%f %f\n",platforms[0].x,camera.offset.x);
+    float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
+    FILE * fptr = fopen("save.sav", "wb");
+    if(fptr == NULL) return;
+    fwrite(data, sizeof(float), sizeof(data)/sizeof(float), fptr);
+    fclose(fptr);
+}
 
 
+void loadGame(Player* player, Rectangle platforms[], Camera2D* camera){
+    float data[3];
+    FILE * fptr = fopen("save.sav", "rb");
+    if(fptr == NULL) return;
+    fread(data, sizeof(float), 3, fptr);
+    fclose(fptr);
+    player->playerRect.x = data[0];
+    player->playerRect.y = data[1];
+    camera->offset.x = data[2];
+    printf("%f %f %f",data[0], data[1], data[2]);
+}
+#endif
