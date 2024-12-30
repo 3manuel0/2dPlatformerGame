@@ -54,7 +54,7 @@ void GameInit(){
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
-    loadGame(&player, platforms, &camera);
+    loadGame(&player, &camera);
     for(U8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
@@ -210,7 +210,7 @@ void GameFrame(){
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
     #ifdef PLATFORM_WEB
-    saveGame(player, platforms, platformsCount, camera);
+    saveGame(player,  camera);
     #endif
 }
 
@@ -228,7 +228,7 @@ int main(){
     }
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    saveGame(player, platforms, platformsCount, camera);
+    saveGame(player, camera);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
     return 0;
@@ -266,7 +266,7 @@ void takeDamage(U32 *hp, U32 dmg){
 
 
 #ifndef PLATFORM_WEB
-void saveGame(Player player, Rectangle platforms[], U32 platformsCount, Camera2D camera){
+void saveGame(Player player, Camera2D camera){
     printf("%f %f\n",platforms[0].x,camera.offset.x);
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
     FILE * fptr = fopen("save.sav", "wb");
@@ -276,7 +276,7 @@ void saveGame(Player player, Rectangle platforms[], U32 platformsCount, Camera2D
 }
 
 
-void loadGame(Player* player, Rectangle platforms[], Camera2D* camera){
+void loadGame(Player* player, Camera2D* camera){
     float data[3];
     FILE * fptr = fopen("save.sav", "rb");
     if(fptr == NULL) return;

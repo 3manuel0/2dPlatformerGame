@@ -60,7 +60,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
 void takeDamage(U32 *hp, U32 dmg);
 
 // save game 
-void saveGame(Player player, Rectangle platforms[], U32 platformsCount, Camera2D camera);
+void saveGame(Player player, Camera2D camera);
 
-void loadGame(Player* player, Rectangle platforms[], Camera2D* camera);
+void loadGame(Player* player, Camera2D* camera);
 #endif
