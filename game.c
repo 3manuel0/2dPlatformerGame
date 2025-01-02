@@ -110,6 +110,7 @@ void GameFrame(){
         player.playerRect.y = 100;
         takeDamage(&player.healthPoints, 200);
         player.playerRect.x = 0;
+        resetGame();
         gameOver = true;
             // camera.offset.x = 0;
     }
@@ -161,7 +162,7 @@ void GameFrame(){
         // }
         player.velocity.y += Gravity * dt;
         if(onGround){
-            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)){
+            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
                 player.velocity.y -= 500;
                 onGround = false;
             }
@@ -206,11 +207,11 @@ void GameFrame(){
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-    DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
+    DrawText("Use AS to move or and W or space to jump", 20 + camera.offset.x, 200, 16, BLACK);
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
     #ifdef PLATFORM_WEB
-    saveGame(player,  camera);
+        saveGame(player,  camera);
     #endif
 }
 
@@ -263,7 +264,13 @@ void takeDamage(U32 *hp, U32 dmg){
       *hp -= *hp;
     }
 }
-
+void resetGame() {
+    player.playerRect.x = 0; player.playerRect.y = 100;
+    for(U8 i = 0; i < platformsCount; i++){
+        platforms[i].x -= camera.offset.x;
+    }
+    camera = (Camera2D){0};
+}
 
 #ifndef PLATFORM_WEB
 void saveGame(Player player, Camera2D camera){
@@ -287,4 +294,5 @@ void loadGame(Player* player, Camera2D* camera){
     camera->offset.x = data[2];
     printf("%f %f %f",data[0], data[1], data[2]);
 }
+
 #endif
