@@ -91,9 +91,7 @@ void GameFrame(){
     hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
-    // printf("%f\n%f\n%d",dt ,player.playerRect.y , platformsCount);
-    // frame delay to slow the fast animation pace
-    // frameDelayCounter ++;
+
     if(player.frameIndex >= numberOfFrames){
         // player.frameIndex %= numberOfFrames;
         player.frameIndex = 0;
@@ -193,21 +191,17 @@ void GameFrame(){
     DrawRectangleRec(healthPoints, hpColor);
     DrawRectangleLinesEx(healthBar, 3, GRAY);
     DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
-        // else if(IsKeyDown(KEY_E)){
-        //     // numberOfFrames = attack.numOfFrames;
-        //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
-        // }
+
     for(U16 i = 0; i < platformsCount; i++){
-        // DrawRectangleRec(platforms[i], BLUE);
+
         DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
-        // DrawRectangle(99, 0, 25, 65,WHITE);
-        // DrawRectangleRec(platforms[i], BLUE);
 
     }
     // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
     // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
     DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-    DrawText("Use AS to move or and W or space to jump", 20 + camera.offset.x, 200, 16, BLACK);
+    DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
+    DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
     #ifdef PLATFORM_WEB
@@ -225,11 +219,13 @@ int main(){
     {   
 
         GameFrame();
-        // printf("%f\t%f\t%d\n", player.velocity.y, frameDelayCounter, player.frameIndex);
+
     }
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    // saving the game stat
     saveGame(player, camera);
+
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
     return 0;
@@ -257,6 +253,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
   };
 }
 
+// maybe unecessary function to take dmg (reduce hp)
 void takeDamage(U32 *hp, U32 dmg){
     if(*hp > 0){
       *hp -= dmg;
@@ -264,6 +261,8 @@ void takeDamage(U32 *hp, U32 dmg){
       *hp -= *hp;
     }
 }
+
+// reset the game
 void resetGame() {
     player.playerRect.x = 0; player.playerRect.y = 100;
     for(U8 i = 0; i < platformsCount; i++){
@@ -273,26 +272,30 @@ void resetGame() {
 }
 
 #ifndef PLATFORM_WEB
+
+// save the player's position and the camera postion to a file as binary values
 void saveGame(Player player, Camera2D camera){
-    printf("%f %f\n",platforms[0].x,camera.offset.x);
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
     FILE * fptr = fopen("save.sav", "wb");
     if(fptr == NULL) return;
     fwrite(data, sizeof(float), sizeof(data)/sizeof(float), fptr);
+    fwrite(&player.healthPoints, sizeof(U32), 1, fptr);
     fclose(fptr);
 }
 
-
+// load the save from the save.sav file
 void loadGame(Player* player, Camera2D* camera){
     float data[3];
+    U32 hp;
     FILE * fptr = fopen("save.sav", "rb");
     if(fptr == NULL) return;
     fread(data, sizeof(float), 3, fptr);
+    fread(&hp, sizeof(U32), 1, fptr);
     fclose(fptr);
     player->playerRect.x = data[0];
     player->playerRect.y = data[1];
     camera->offset.x = data[2];
-    printf("%f %f %f",data[0], data[1], data[2]);
+    printf("%f %f %f %d",data[0], data[1], data[2], hp);
 }
 
 #endif

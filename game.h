@@ -62,7 +62,10 @@ void takeDamage(U32 *hp, U32 dmg);
 // save game 
 void saveGame(Player player, Camera2D camera);
 
+// load game
 void loadGame(Player* player, Camera2D* camera);
 
+// reset the game
 void resetGame();
+
 #endif
