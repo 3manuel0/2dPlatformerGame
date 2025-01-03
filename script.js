@@ -148,6 +148,7 @@ let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
 let audio;
 let targetFps;
+let currentMousePosition = { x: 0, y: 0 };
 const startingScreen = document.getElementById("strating-screen");
 
 // getting Cstring length in memory
@@ -230,7 +231,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       const [r, g, b, a] = new Uint8Array(buffer, color_ptr, 4);
       ctx.font = `${font_size - 5}px grixel`;
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
-      ctx.fillText(text, x, y);
+      ctx.fillText(text, x, y + font_size - 5);
     },
     LoadTexture: (out_ptr, path_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -349,6 +350,14 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       ctx.rect(x, y, width, height);
       ctx.stroke();
     },
+    GetMousePosition: (ret_ptr) => {
+      const canvasRect = ctx.canvas.getBoundingClientRect();
+      const x = currentMousePosition.x - canvasRect.left;
+      const y = currentMousePosition.y - canvasRect.top;
+      const buffer = wasm.instance.exports.memory.buffer;
+      new Float32Array(buffer, ret_ptr, 2).set([x, y]);
+      console.log(canvasRect, x, y);
+    },
     DrawFPS: (x, y) => {
       text = `${Math.floor(1 / dt)} FPS`;
       const fontSize = 16 - 3;
@@ -364,22 +373,35 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // console.log(y1 + height1 >= y2 && x1 < x2 + width2);
       return y1 + height1 >= y2 && x1 <= x2 + width2 && x1 + width1 >= x2;
     },
+    CheckCollisionPointRec: (point_ptr, rect_ptr) => {
+      const buffer = wasm.instance.exports.memory.buffer;
+      const [pX, pY] = new Float32Array(buffer, point_ptr, 2);
+      const [recX, recY, width, height] = new Float32Array(buffer, rect_ptr, 2);
+      // console.log(pX, pY, recX, recY, width, height);
+      console.log(
+        recY + height >= pY && pX <= recX + width && recX + width >= pX
+      );
+      // return recY + height >= pY && pX <= recX + width && recX + width >= pX;
+      return true;
+    },
     IsKeyDown: (key) => {
       // console.log(key);
       return currentPressedKeyState.has(key);
     },
     loadGame: (player_ptr, camera_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
-      const memoryView = new DataView(buffer);
-      const [x, y, width, height] = new Float32Array(buffer, player_ptr, 4);
-      console.log(x, y, width, height, memoryView.getFloat32(player_ptr, true));
-      memoryView.setFloat32(player_ptr, localStorage.getItem("playerX"), true);
-      memoryView.setFloat32(
-        player_ptr + 4,
+
+      // ----changing wasm's memory to the saved values------
+      new Float32Array(buffer, player_ptr, 1).set([
+        localStorage.getItem("playerX"),
+      ]);
+      new Float32Array(buffer, player_ptr + 4, 1).set([
         localStorage.getItem("playerY"),
-        true
-      );
-      memoryView.setFloat32(camera_ptr, localStorage.getItem("cameraX"), true);
+      ]);
+      new Float32Array(buffer, camera_ptr, 1).set([
+        localStorage.getItem("cameraX"),
+      ]);
+      // --------------------------------------------------
     },
     saveGame: (player_ptr, camera_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -447,3 +469,8 @@ document.getElementById("play").onclick = () => {
   playing = true;
   startingScreen.style.display = "none";
 };
+
+const mouseMove = (e) => {
+  currentMousePosition = { x: e.clientX, y: e.clientY };
+};
+window.addEventListener("mousemove", mouseMove);

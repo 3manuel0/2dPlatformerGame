@@ -29,6 +29,7 @@ Texture2D bg1 = {0};
 Texture2D bg2 = {0};
 Texture2D playerIcon = {0};
 Camera2D camera = {{0, 0}, {0, 1.0}, 0, 1.0};
+Vector2 mouse = {0};
 bool onGround = false;
 Rectangle spriteRect = {0};
 Animation idle = {0};
@@ -82,8 +83,12 @@ void GameInit(){
 }
 
 void GameFrame(){
+    mouse = GetMousePosition();
     UpdateMusicStream(mainSong);
     float dt = GetFrameTime();
+    if(player.healthPoints <= 0){
+        gameOver = true;
+    }
     player.velocity.x = 500 * dt;
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
@@ -106,14 +111,11 @@ void GameFrame(){
     }
     if(player.playerRect.y > 900){
         player.playerRect.y = 100;
-        takeDamage(&player.healthPoints, 200);
+        takeDamage(&player.healthPoints, 400);
         player.playerRect.x = 0;
         resetGame();
-        gameOver = true;
-            // camera.offset.x = 0;
     }
     onGround = false;
-
     for(U16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
@@ -183,25 +185,29 @@ void GameFrame(){
         }
     BeginDrawing();
     ClearBackground(WHITE);
-    DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
-    DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
-    DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
-    DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
-    DrawRectangleRec(healthBar, RAYWHITE);
-    DrawRectangleRec(healthPoints, hpColor);
-    DrawRectangleLinesEx(healthBar, 3, GRAY);
-    DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
+    if(gameOver){
+        DrawGameOver(WHITE);
+    }else{
+        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
+        DrawRectangleRec(healthBar, RAYWHITE);
+        DrawRectangleRec(healthPoints, hpColor);
+        DrawRectangleLinesEx(healthBar, 3, GRAY);
+        DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
 
-    for(U16 i = 0; i < platformsCount; i++){
+        for(U16 i = 0; i < platformsCount; i++){
 
-        DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
+            DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
 
+        }
+        // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
+        // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
+        DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
+        DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
+        DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
     }
-    // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
-    // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
-    DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-    DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
-    DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
     #ifdef PLATFORM_WEB
@@ -244,6 +250,20 @@ Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
   };
 }
 
+
+void DrawGameOver(Color color){
+    // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2 - 150, 300, 30, color); 
+    // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2, 300, 30, color); 
+    Rectangle button = {screenWidth/2 - (100 / 2), screenHeight/2 + 150, 100, 30};
+    DrawRectangleRec(button, color); 
+    DrawText("Restart", button.x, button.y + 5, 16, BLACK);
+    DrawText("Game Over!", screenWidth/2 , screenHeight/2, 16, BLACK);
+    if(CheckCollisionPointRec(mouse, button)){
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            DrawText("Anger Builds", screenWidth/2 , screenHeight/2, 16, BLACK);
+        }
+    }
+}
 // function that creates/returns an animation
 Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, U8 numOfFrames) {
   return (Animation){
@@ -255,7 +275,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
 
 // maybe unecessary function to take dmg (reduce hp)
 void takeDamage(U32 *hp, U32 dmg){
-    if(*hp > 0){
+    if(*hp > dmg){
       *hp -= dmg;
     }else if(*hp < dmg){
       *hp -= *hp;

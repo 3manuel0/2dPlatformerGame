@@ -68,4 +68,6 @@ void loadGame(Player* player, Camera2D* camera);
 // reset the game
 void resetGame();
 
+void DrawGameOver(Color color);
+
 #endif
