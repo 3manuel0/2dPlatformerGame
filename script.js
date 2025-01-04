@@ -376,17 +376,28 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     CheckCollisionPointRec: (point_ptr, rect_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
       const [pX, pY] = new Float32Array(buffer, point_ptr, 2);
-      const [recX, recY, width, height] = new Float32Array(buffer, rect_ptr, 2);
+      const [recX, recY, width, height] = new Float32Array(buffer, rect_ptr, 4);
       // console.log(pX, pY, recX, recY, width, height);
       console.log(
-        recY + height >= pY && pX <= recX + width && recX + width >= pX
+        pX,
+        pY,
+        recX,
+        recY,
+        recX + width,
+        recY + height,
+        pY <= recY + height && pY >= recY && pX <= recX + width && pX >= recX
       );
-      // return recY + height >= pY && pX <= recX + width && recX + width >= pX;
-      return true;
+      return (
+        pY <= recY + height && pY >= recY && pX <= recX + width && pX >= recX
+      );
+      // return true;
     },
     IsKeyDown: (key) => {
       // console.log(key);
       return currentPressedKeyState.has(key);
+    },
+    IsMouseButtonPressed: (key) => {
+      return true;
     },
     loadGame: (player_ptr, camera_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;

@@ -86,9 +86,6 @@ void GameFrame(){
     mouse = GetMousePosition();
     UpdateMusicStream(mainSong);
     float dt = GetFrameTime();
-    if(player.healthPoints <= 0){
-        gameOver = true;
-    }
     player.velocity.x = 500 * dt;
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
@@ -186,7 +183,7 @@ void GameFrame(){
     BeginDrawing();
     ClearBackground(WHITE);
     if(gameOver){
-        DrawGameOver(WHITE);
+        DrawGameOver(GREEN);
     }else{
         DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
@@ -207,6 +204,9 @@ void GameFrame(){
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
         DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
         DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
+    }
+    if(player.healthPoints <= 0){
+        gameOver = true;
     }
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
@@ -261,6 +261,9 @@ void DrawGameOver(Color color){
     if(CheckCollisionPointRec(mouse, button)){
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             DrawText("Anger Builds", screenWidth/2 , screenHeight/2, 16, BLACK);
+            player.healthPoints = 1000;
+            hpColor = GREEN;
+            gameOver = false;
         }
     }
 }
