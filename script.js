@@ -144,6 +144,7 @@ let dt;
 let images = [];
 let prevPressedKeyState = new Set();
 let currentPressedKeyState = new Set();
+let currentPressedMouseKeyState = new Set();
 let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
 let audio;
@@ -182,6 +183,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     BeginDrawing: () => {},
     EndDrawing: () => {
       prevPressedKeyState.clear();
+      currentPressedMouseKeyState.clear();
       prevPressedKeyState = new Set(currentPressedKeyState);
     },
     GetScreenWidth: () => {
@@ -397,7 +399,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       return currentPressedKeyState.has(key);
     },
     IsMouseButtonPressed: (key) => {
-      return true;
+      return currentPressedMouseKeyState.has(key);
     },
     loadGame: (player_ptr, camera_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -441,11 +443,15 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   const keyUp = (e) => {
     currentPressedKeyState.delete(RAYLIB_KEY_MAPPINGS[e.code]);
   };
-
+  const MouseDown = (e) => {
+    currentPressedMouseKeyState.add(e.button);
+    console.log(e.button);
+  };
   // GameInit func from wasm (see the C code for function)
   GameInit();
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
+  window.addEventListener("mousedown", MouseDown);
   // first initialization for window.requestAnimationFrame
   const first = (timestamp) => {
     previous = timestamp;
