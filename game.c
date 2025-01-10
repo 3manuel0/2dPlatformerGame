@@ -183,7 +183,14 @@ void GameFrame(){
     BeginDrawing();
     ClearBackground(WHITE);
     if(gameOver){
-        DrawGameOver(GREEN);
+        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
+        for(U16 i = 0; i < platformsCount; i++){
+            DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
+        }
+        DrawGameOver(WHITE);
     }else{
         DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
@@ -254,10 +261,10 @@ Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
 void DrawGameOver(Color color){
     // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2 - 150, 300, 30, color); 
     // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2, 300, 30, color); 
-    Rectangle button = {screenWidth/2 - (100 / 2), screenHeight/2 + 150, 100, 30};
+    Rectangle button = {screenWidth/2 - (100.0 / 2), screenHeight/2 + 150, 100, 30};
     DrawRectangleRec(button, color); 
     DrawText("Restart", button.x, button.y + 5, 16, BLACK);
-    DrawText("Game Over!", screenWidth/2 , screenHeight/2, 16, BLACK);
+    DrawText("Game Over!", screenWidth/2 - (100.0 / 2), screenHeight/2, 32, BLACK);
     if(CheckCollisionPointRec(mouse, button)){
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
             DrawText("Anger Builds", screenWidth/2 , screenHeight/2, 16, BLACK);
