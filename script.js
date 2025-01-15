@@ -357,8 +357,14 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       const x = currentMousePosition.x - canvasRect.left;
       const y = currentMousePosition.y - canvasRect.top;
       const buffer = wasm.instance.exports.memory.buffer;
-      new Float32Array(buffer, ret_ptr, 2).set([x, y]);
-      console.log(canvasRect, x, y);
+      new Float32Array(buffer, ret_ptr, 2).set([
+        (canvas.clientWidth / canvas.width) * x,
+        (canvas.clientHeight / canvas.height) * y,
+      ]);
+      console.log(
+        (canvas.clientWidth / canvas.width) * x,
+        (canvas.clientHeight / canvas.height) * y
+      );
     },
     DrawFPS: (x, y) => {
       text = `${Math.floor(1 / dt)} FPS`;
@@ -376,19 +382,17 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       return y1 + height1 >= y2 && x1 <= x2 + width2 && x1 + width1 >= x2;
     },
     CheckCollisionPointRec: (point_ptr, rect_ptr) => {
+      let [x_off, y_off] = [
+        canvas.clientWidth / canvas.width,
+        canvas.clientHeight / canvas.height,
+      ];
       const buffer = wasm.instance.exports.memory.buffer;
       const [pX, pY] = new Float32Array(buffer, point_ptr, 2);
-      const [recX, recY, width, height] = new Float32Array(buffer, rect_ptr, 4);
+      let [recX, recY, width, height] = new Float32Array(buffer, rect_ptr, 4);
+      recX *= x_off;
+      recY *= y_off;
       // console.log(pX, pY, recX, recY, width, height);
-      console.log(
-        pX,
-        pY,
-        recX,
-        recY,
-        recX + width,
-        recY + height,
-        pY <= recY + height && pY >= recY && pX <= recX + width && pX >= recX
-      );
+      console.log(pX, pY, recX, recY, recX + width, recY + height);
       return (
         pY <= recY + height && pY >= recY && pX <= recX + width && pX >= recX
       );
