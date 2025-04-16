@@ -1,10 +1,7 @@
-#include"raylib.h"
 #include "game.h"
-#include <stdbool.h>
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
-
 Rectangle platforms[] = {
         {0,550,400, 400},
         {600,650,400, 400},
@@ -21,7 +18,7 @@ Rectangle platforms[] = {
         {11400,650,1000, 400},
         {12400,650,1000, 400},    
 };
-U8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
+u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 Player player = {0};
 Texture2D terrain = {0};
 Texture2D bg = {0};
@@ -37,7 +34,7 @@ Animation run = {0};
 Animation jump = {0};
 Animation fall = {0};
 // Animation attack = {0};
-U8 numberOfFrames = 0;
+u8 numberOfFrames = 0;
 bool gameOver = false;
 // f32 framDelay = 0;
 f32 frameDelayCounter = 0;
@@ -45,18 +42,22 @@ Rectangle healthBar ;
 Rectangle healthPoints ;
 Rectangle hitBox;
 Color hpColor ;
-U16  fullHp ;
+u16  fullHp ;
 f32 hpConv ;
 Music mainSong = {0};
 
 void GameInit(){
-    InitWindow(screenWidth, screenHeight, "my game in wasm");
+    #ifndef PLATFORM_WEB
+        InitWindow(screenWidth, screenHeight, "my platformer game");
+    #else
+        InitWindow(screenWidth, screenHeight, "my platformer game in wasm");
+    #endif
     InitAudioDevice();
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
     loadGame(&player, &camera);
-    for(U8 i = 0; i < platformsCount; i++){
+    for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
     // creating animations
@@ -78,7 +79,7 @@ void GameInit(){
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
     onGround = false;
-    SetTargetFPS(60);
+    SetTargetFPS(120);
     SetMasterVolume(0.1);
 }
 
@@ -89,7 +90,8 @@ void GameFrame(){
     player.velocity.x = 500 * dt;
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
-    healthPoints.width = player.healthPoints * hpConv; 
+    healthPoints.width = player.healthPoints * hpConv;
+    printf("%f\n", healthPoints.width);
     hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
@@ -100,7 +102,7 @@ void GameFrame(){
         frameDelayCounter = 0;
     }
     frameDelayCounter += 12 * dt;
-    player.frameIndex = (U8)frameDelayCounter;
+    player.frameIndex = (u8)frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
     if (numberOfFrames > idle.numOfFrames){
@@ -113,7 +115,7 @@ void GameFrame(){
         resetGame();
     }
     onGround = false;
-    for(U16 i = 0; i <  platformsCount; i++){
+    for(u16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
             player.velocity.y = 0;
@@ -126,7 +128,7 @@ void GameFrame(){
             if(player.playerRect.x >= screenWidth / 2){
                 camera.offset.x -= player.velocity.x;
                 player.orientation = RIGHT;
-                for(U16 i = 0; i <  platformsCount; i++){
+                for(u16 i = 0; i <  platformsCount; i++){
                     platforms[i].x -= player.velocity.x;
                 }      
             } else {
@@ -145,7 +147,7 @@ void GameFrame(){
             } else {
                 player.orientation = LEFT;
                 camera.offset.x += player.velocity.x;
-                for(U16 i = 0; i <  platformsCount; i++){
+                for(u16 i = 0; i <  platformsCount; i++){
                     platforms[i].x += player.velocity.x ;
                 }                   
             }
@@ -187,7 +189,7 @@ void GameFrame(){
         DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
         DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
-        for(U16 i = 0; i < platformsCount; i++){
+        for(u16 i = 0; i < platformsCount; i++){
             DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
         }
         DrawGameOver(WHITE);
@@ -201,7 +203,7 @@ void GameFrame(){
         DrawRectangleLinesEx(healthBar, 3, GRAY);
         DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
 
-        for(U16 i = 0; i < platformsCount; i++){
+        for(u16 i = 0; i < platformsCount; i++){
 
             DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
 
@@ -224,7 +226,6 @@ void GameFrame(){
 
 
 #ifndef PLATFORM_WEB
-#include <stdio.h>
 int main(){
     GameInit();
     // Main game loop
@@ -275,7 +276,7 @@ void DrawGameOver(Color color){
     }
 }
 // function that creates/returns an animation
-Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, U8 numOfFrames) {
+Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, u8 numOfFrames) {
   return (Animation){
       .rightAnimationTexture = rightAnimationTexture,
       .leftAnimationTexture = leftAnimationTexture,
@@ -284,7 +285,7 @@ Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimati
 }
 
 // maybe unecessary function to take dmg (reduce hp)
-void takeDamage(U32 *hp, U32 dmg){
+void takeDamage(u32 *hp, u32 dmg){
     if(*hp > dmg){
       *hp -= dmg;
     }else if(*hp < dmg){
@@ -295,7 +296,7 @@ void takeDamage(U32 *hp, U32 dmg){
 // reset the game
 void resetGame() {
     player.playerRect.x = 0; player.playerRect.y = 100;
-    for(U8 i = 0; i < platformsCount; i++){
+    for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x -= camera.offset.x;
     }
     camera = (Camera2D){0};
@@ -306,26 +307,27 @@ void resetGame() {
 // save the player's position and the camera postion to a file as binary values
 void saveGame(Player player, Camera2D camera){
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
-    FILE * fptr = fopen("save.sav", "wb");
+    FILE * fptr = fopen("save.sav", "w"); 
     if(fptr == NULL) return;
     fwrite(data, sizeof(float), sizeof(data)/sizeof(float), fptr);
-    fwrite(&player.healthPoints, sizeof(U32), 1, fptr);
+    fwrite(&player.healthPoints, sizeof(u32), 1, fptr);
     fclose(fptr);
 }
 
 // load the save from the save.sav file
 void loadGame(Player* player, Camera2D* camera){
     float data[3];
-    U32 hp;
+    u32 hp;
     FILE * fptr = fopen("save.sav", "rb");
     if(fptr == NULL) return;
     fread(data, sizeof(float), 3, fptr);
-    fread(&hp, sizeof(U32), 1, fptr);
+    fread(&hp, sizeof(u32), 1, fptr);
     fclose(fptr);
     player->playerRect.x = data[0];
     player->playerRect.y = data[1];
     camera->offset.x = data[2];
-    printf("%f %f %f %d",data[0], data[1], data[2], hp);
+    // player->healthPoints = hp;
+    printf("%f %f %f %d php: %d",data[0], data[1], data[2], hp, player->healthPoints);
 }
 
 #endif

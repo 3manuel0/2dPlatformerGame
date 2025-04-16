@@ -361,10 +361,10 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         (canvas.clientWidth / canvas.width) * x,
         (canvas.clientHeight / canvas.height) * y,
       ]);
-      console.log(
-        (canvas.clientWidth / canvas.width) * x,
-        (canvas.clientHeight / canvas.height) * y
-      );
+      // console.log(
+      //   (canvas.clientWidth / canvas.width) * x,
+      //   (canvas.clientHeight / canvas.height) * y
+      // );
     },
     DrawFPS: (x, y) => {
       text = `${Math.floor(1 / dt)} FPS`;
@@ -392,7 +392,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       recX *= x_off;
       recY *= y_off;
       // console.log(pX, pY, recX, recY, width, height);
-      console.log(pX, pY, recX, recY, recX + width, recY + height);
+      // console.log(pX, pY, recX, recY, recX + width, recY + height);
       return (
         pY <= recY + height && pY >= recY && pX <= recX + width && pX >= recX
       );
