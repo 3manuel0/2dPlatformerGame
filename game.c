@@ -27,7 +27,6 @@ Texture2D bg2 = {0};
 Texture2D playerIcon = {0};
 Camera2D camera = {{0, 0}, {0, 1.0}, 0, 1.0};
 Vector2 mouse = {0};
-bool onGround = false;
 Rectangle spriteRect = {0};
 Animation idle = {0};
 Animation run = {0};
@@ -78,7 +77,6 @@ void GameInit(){
     hpColor = GREEN;
     fullHp = player.healthPoints;
     hpConv = healthBar.width / player.healthPoints;
-    onGround = false;
     SetTargetFPS(120);
     SetMasterVolume(0.1);
 }
@@ -91,7 +89,7 @@ void GameFrame(){
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv;
-    printf("%f\n", healthPoints.width);
+    // printf("%f\n", healthPoints.width);
     hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
@@ -114,13 +112,13 @@ void GameFrame(){
         player.playerRect.x = 0;
         resetGame();
     }
-    onGround = false;
+    player.onGround = false;
     for(u16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
             player.velocity.y = 0;
             player.playerRect.y = platforms[i].y - spriteRect.height;
-            onGround = true;
+            player.onGround = true;
             break;
         }
     }
@@ -160,18 +158,18 @@ void GameFrame(){
         //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         // }
         player.velocity.y += Gravity * dt;
-        if(onGround){
+        if(player.onGround){
             if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
                 player.velocity.y -= 500;
-                onGround = false;
+                player.onGround = false;
             }
         }
-        if(!onGround){
+        if(!player.onGround){
             numberOfFrames = jump.numOfFrames;
             player.frameIndex = 0;
             player.currentTexture = player.orientation == RIGHT ?  jump.rightAnimationTexture : jump.leftAnimationTexture;
         }
-        if(!onGround && player.velocity.y > 0){
+        if(!player.onGround && player.velocity.y > 0){
             numberOfFrames = fall.numOfFrames;
             player.frameIndex = 0;
             player.currentTexture = player.orientation == RIGHT ?  fall.rightAnimationTexture : fall.leftAnimationTexture;

@@ -29,7 +29,7 @@ typedef int64_t i64;
 typedef struct Animation {
   Texture2D rightAnimationTexture;
   Texture2D leftAnimationTexture;
-  unsigned char numOfFrames;
+  u8 numOfFrames;
 } Animation;
 
 typedef enum Orientation{
@@ -42,7 +42,8 @@ typedef struct Player {
   Rectangle playerRect;
   Vector2 spriteSize;
   Vector2 velocity;
-  u8 frameIndex;
+  u16 frameIndex;
+  bool onGround;
   u32 healthPoints;
   Texture2D currentTexture;
   Orientation orientation;
