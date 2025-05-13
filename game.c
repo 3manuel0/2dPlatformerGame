@@ -56,9 +56,6 @@ void GameInit(){
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
     fullHp = player.healthPoints;
-    for(u8 i = 0; i < platformsCount; i++){
-        platforms[i].x += camera.offset.x;
-    }
     // creating animations
     idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
     run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
@@ -82,6 +79,9 @@ void GameInit(){
     }
     hpConv = healthBar.width / player.healthPoints;
     loadGame(&player, &camera);
+    for(u8 i = 0; i < platformsCount; i++){
+        platforms[i].x += camera.offset.x;
+    }
     SetTargetFPS(120);
     SetMasterVolume(0.05);
 }
