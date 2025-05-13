@@ -418,6 +418,12 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       new Float32Array(buffer, camera_ptr, 1).set([
         localStorage.getItem("cameraX"),
       ]);
+      console.log(new Uint32Array(buffer, player_ptr + 36, 1));
+      new Uint32Array(buffer, player_ptr + 16 + 16 + 4, 1).set([
+        localStorage.getItem("hp"),
+      ]);
+
+      console.log(new Uint32Array(buffer, player_ptr + 36, 1));
       // --------------------------------------------------
     },
     saveGame: (player_ptr, camera_ptr) => {

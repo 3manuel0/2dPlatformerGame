@@ -55,7 +55,7 @@ void GameInit(){
     mainSong = LoadMusicStream("assets/sound/mainSong.mp3");
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
-    loadGame(&player, &camera);
+    fullHp = player.healthPoints;
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
@@ -75,16 +75,21 @@ void GameInit(){
     healthBar = (Rectangle) {34, 10, 300, 30};
     healthPoints = (Rectangle) {healthBar.x, healthBar.y, 300, healthBar.height};
     hpColor = GREEN;
-    fullHp = player.healthPoints;
+    if(player.healthPoints <= 45 * fullHp / 100){ 
+        hpColor = YELLOW;
+    }else if(player.healthPoints <= 30 * fullHp / 100){
+        hpColor = RED;
+    }
     hpConv = healthBar.width / player.healthPoints;
+    loadGame(&player, &camera);
     SetTargetFPS(120);
-    SetMasterVolume(0.1);
+    SetMasterVolume(0.05);
 }
 
 void GameFrame(){
     mouse = GetMousePosition();
     UpdateMusicStream(mainSong);
-    float dt = GetFrameTime();
+    f32 dt = GetFrameTime();
     player.velocity.x = 500 * dt;
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
@@ -100,7 +105,7 @@ void GameFrame(){
         frameDelayCounter = 0;
     }
     frameDelayCounter += 12 * dt;
-    player.frameIndex = (u8)frameDelayCounter;
+    player.frameIndex = frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
     if (numberOfFrames > idle.numOfFrames){
@@ -160,7 +165,7 @@ void GameFrame(){
         player.velocity.y += Gravity * dt;
         if(player.onGround){
             if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
-                player.velocity.y -= 500;
+                player.velocity.y -= 410;
                 player.onGround = false;
             }
         }
@@ -305,7 +310,7 @@ void resetGame() {
 // save the player's position and the camera postion to a file as binary values
 void saveGame(Player player, Camera2D camera){
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
-    FILE * fptr = fopen("save.sav", "w"); 
+    FILE * fptr = fopen("save.sav", "wb"); 
     if(fptr == NULL) return;
     fwrite(data, sizeof(float), sizeof(data)/sizeof(float), fptr);
     fwrite(&player.healthPoints, sizeof(u32), 1, fptr);
@@ -324,7 +329,7 @@ void loadGame(Player* player, Camera2D* camera){
     player->playerRect.x = data[0];
     player->playerRect.y = data[1];
     camera->offset.x = data[2];
-    // player->healthPoints = hp;
+    player->healthPoints = hp;
     printf("%f %f %f %d php: %d",data[0], data[1], data[2], hp, player->healthPoints);
 }
 

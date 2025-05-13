@@ -29,7 +29,7 @@ typedef int64_t i64;
 typedef struct Animation {
   Texture2D rightAnimationTexture;
   Texture2D leftAnimationTexture;
-  u8 numOfFrames;
+  u32 numOfFrames;
 } Animation;
 
 typedef enum Orientation{
