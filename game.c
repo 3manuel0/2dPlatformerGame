@@ -104,7 +104,7 @@ void GameFrame(){
         player.frameIndex = 0;
         frameDelayCounter = 0;
     }
-    frameDelayCounter += 12 * dt;
+    frameDelayCounter += 13 * dt;
     player.frameIndex = frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;

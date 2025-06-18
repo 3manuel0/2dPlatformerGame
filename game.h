@@ -4,9 +4,13 @@
 #include <stdint.h>
 #ifdef linux
 #endif
+
 #ifdef _WIN32
 #include "raylib.h"
 #endif
+
+
+
 #include <stdbool.h>
 
 #define Gravity 800.8f
