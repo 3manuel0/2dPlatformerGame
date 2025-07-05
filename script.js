@@ -433,6 +433,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       const [camx, camy] = new Float32Array(buffer, camera_ptr, 2);
       const [hp] = new Uint32Array(buffer, player_ptr + 16 + 16 + 4, 1);
       // console.log(hp);
+
       localStorage.setItem("playerX", x);
       localStorage.setItem("playerY", y);
       localStorage.setItem("cameraX", camx);

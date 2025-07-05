@@ -37,6 +37,7 @@ u8 numberOfFrames = 0;
 bool gameOver = false;
 // f32 framDelay = 0;
 f32 frameDelayCounter = 0;
+f32 saveDelay = 0;
 Rectangle healthBar ;
 Rectangle healthPoints ;
 Rectangle hitBox;
@@ -95,6 +96,13 @@ void GameFrame(){
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv;
     // printf("%f\n", healthPoints.width);
+    #ifdef PLATFORM_WEB
+        saveDelay += dt;
+        if(saveDelay >= 1.50f){
+            saveGame(player,  camera);
+            saveDelay = 0;
+        }
+    #endif
     hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
@@ -104,20 +112,24 @@ void GameFrame(){
         player.frameIndex = 0;
         frameDelayCounter = 0;
     }
-    frameDelayCounter += 13 * dt;
+    frameDelayCounter += 12 * dt;
     player.frameIndex = frameDelayCounter;
     numberOfFrames = idle.numOfFrames;
     player.currentTexture = player.orientation == RIGHT ?  idle.rightAnimationTexture : idle.leftAnimationTexture;
+    
     if (numberOfFrames > idle.numOfFrames){
         player.frameIndex = 0;
     }
+
     if(player.playerRect.y > 900){
         player.playerRect.y = 100;
         takeDamage(&player.healthPoints, 400);
         player.playerRect.x = 0;
         resetGame();
     }
+
     player.onGround = false;
+
     for(u16 i = 0; i <  platformsCount; i++){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
@@ -171,12 +183,12 @@ void GameFrame(){
         }
         if(!player.onGround){
             numberOfFrames = jump.numOfFrames;
-            player.frameIndex = 0;
+            // player.frameIndex = 0;
             player.currentTexture = player.orientation == RIGHT ?  jump.rightAnimationTexture : jump.leftAnimationTexture;
         }
         if(!player.onGround && player.velocity.y > 0){
             numberOfFrames = fall.numOfFrames;
-            player.frameIndex = 0;
+            // player.frameIndex = 0;
             player.currentTexture = player.orientation == RIGHT ?  fall.rightAnimationTexture : fall.leftAnimationTexture;
         }
         if(player.healthPoints <= 45 * fullHp / 100){ 
@@ -185,6 +197,7 @@ void GameFrame(){
         if(player.healthPoints <= 30 * fullHp / 100){
             hpColor = RED;
         }
+
     BeginDrawing();
     ClearBackground(WHITE);
     if(gameOver){
@@ -222,9 +235,7 @@ void GameFrame(){
     }
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
-    #ifdef PLATFORM_WEB
-        saveGame(player,  camera);
-    #endif
+
 }
 
 
@@ -298,7 +309,6 @@ void takeDamage(u32 *hp, u32 dmg){
 
 // reset the game
 void resetGame() {
-    player.playerRect.x = 0; player.playerRect.y = 100;
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x -= camera.offset.x;
     }
