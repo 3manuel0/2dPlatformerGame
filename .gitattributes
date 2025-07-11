@@ -1,0 +1,3 @@
+include/raylib.h linguist-vendored
+include/raymath.h linguist-vendored
+include/rlgl.h linguist-vendored

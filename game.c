@@ -98,7 +98,7 @@ void GameFrame(){
     // printf("%f\n", healthPoints.width);
     #ifdef PLATFORM_WEB
         saveDelay += dt;
-        if(saveDelay >= 1.50f){
+        if(saveDelay >= 1.0f){
             saveGame(player,  camera);
             saveDelay = 0;
         }
