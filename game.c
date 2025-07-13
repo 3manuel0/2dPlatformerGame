@@ -18,7 +18,7 @@ Rectangle platforms[] = {
         {10400,650,1000, 400},
         {11400,650,1000, 400},
         {12400,650,1000, 400},
-        {13600,650,1000, 400},    
+        {13800,650,1000, 400},    
 };
 u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 Player player = {0};
@@ -182,7 +182,7 @@ void GameFrame(){
         if (special_keys[0] && special_keys[1] && special_keys[2]) {
             player.velocity.y = 0.0;
             // printf("Activated: %f \n",player.velocity.y);
-            speed  = 1000;
+            speed  = 2500;
         }
         if(IsKeyPressed(KEY_LEFT_ALT)){
             // printf("pressed %d %d %d\n",special_keys[0], special_keys[1], special_keys[3]);
@@ -231,10 +231,10 @@ void GameFrame(){
         }
         DrawGameOver(WHITE);
     }else{
-        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.05, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.05)  + 1000, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.15 - 600, -30}, 0, 2.0, WHITE);
+        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.25, -30}, 0, 2.0, WHITE);
         DrawRectangleRec(healthBar, RAYWHITE);
         DrawRectangleRec(healthPoints, hpColor);
         DrawRectangleLinesEx(healthBar, 3, GRAY);
@@ -245,8 +245,8 @@ void GameFrame(){
             DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
 
         }
-        // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
-        // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLUE);
+        //DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
+        //DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLACK);
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
         DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
         DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
