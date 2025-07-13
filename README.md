@@ -6,6 +6,9 @@ A 2D platformer game built with **Raylib** and compiled for **Linux**, **Windows
 [Tsoding's zozlib](https://github.com/tsoding/zozlib.js) The idea is to [Program in C for WebAssembly without Emscripten](https://surma.dev/things/c-to-webassembly/) and Using it for my **Raylib Game**.
 This is just a fun personal project of mine to try and make my **Raylib Game** work on web without needing to use Emscripten as it was fun to try and implement the Raylib functions in **javascript** myself and Understand how **WASM32** works with javascript.
 
+<p >
+<div href="#-my-github-stats--"><img width="60%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=3manuel0&layout=compact&theme=dark&title_color=FFC300&text_color=CDD6F4&bg_color=090D13&border_radius=5&langs_count=8&card_width=520" /></div>
+</p>
 ### Created Using:
 
 <p align="left">
