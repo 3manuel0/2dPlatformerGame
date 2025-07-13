@@ -1,4 +1,5 @@
 #include "game.h"
+#include <raylib.h>
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
@@ -16,7 +17,8 @@ Rectangle platforms[] = {
         {9500,650,4000, 400},
         {10400,650,1000, 400},
         {11400,650,1000, 400},
-        {12400,650,1000, 400},    
+        {12400,650,1000, 400},
+        {13600,650,1000, 400},    
 };
 u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 Player player = {0};
@@ -45,6 +47,8 @@ Color hpColor ;
 u16  fullHp ;
 f32 hpConv ;
 Music mainSong = {0};
+u8 special_keys[4] = {0, 0, 0, 0};
+u16 speed = 500;
 
 void GameInit(){
     #ifndef PLATFORM_WEB
@@ -91,7 +95,7 @@ void GameFrame(){
     mouse = GetMousePosition();
     UpdateMusicStream(mainSong);
     f32 dt = GetFrameTime();
-    player.velocity.x = 500 * dt;
+    player.velocity.x = speed * dt;
     player.playerRect.y += player.velocity.y * dt;
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv;
@@ -175,6 +179,23 @@ void GameFrame(){
         //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
         // }
         player.velocity.y += Gravity * dt;
+        if (special_keys[0] && special_keys[1] && special_keys[2]) {
+            player.velocity.y = 0.0;
+            // printf("Activated: %f \n",player.velocity.y);
+            speed  = 1000;
+        }
+        if(IsKeyPressed(KEY_LEFT_ALT)){
+            // printf("pressed %d %d %d\n",special_keys[0], special_keys[1], special_keys[3]);
+            special_keys[special_keys[3]] = 1;
+            if(special_keys[3] < 3)
+                special_keys[3] ++;
+        }
+        if(IsKeyPressed(KEY_LEFT_CONTROL)){
+            for(u8 i = 0; i < 4; i++){
+                special_keys[i] = 0;
+            }
+            speed = 500;
+        }
         if(player.onGround){
             if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
                 player.velocity.y -= 410;

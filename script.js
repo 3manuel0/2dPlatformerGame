@@ -144,6 +144,7 @@ let dt;
 let images = [];
 let prevPressedKeyState = new Set();
 let currentPressedKeyState = new Set();
+let PressedKeyState = {};
 let currentPressedMouseKeyState = new Set();
 let camera_obj = { offset_x: 0, offset_y: 0 };
 let player = { x: 0, y: 0 };
@@ -185,6 +186,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       prevPressedKeyState.clear();
       currentPressedMouseKeyState.clear();
       prevPressedKeyState = new Set(currentPressedKeyState);
+      PressedKeyState = {};
     },
     GetScreenWidth: () => {
       return canvas.width;
@@ -331,6 +333,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
         }
       }
       // const [arg1, arg2] = new Float64Array(buffer, args_ptrs[0], 2);
+      console.log(str);
       console.log(...args);
     },
     InitAudioDevice: () => {},
@@ -402,6 +405,9 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
       // console.log(key);
       return currentPressedKeyState.has(key);
     },
+    IsKeyPressed: (key) => {
+      return PressedKeyState[key];
+    },
     IsMouseButtonPressed: (key) => {
       return currentPressedMouseKeyState.has(key);
     },
@@ -451,6 +457,8 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   const keyDown = (e) => {
     // e.preventDefault();
     currentPressedKeyState.add(RAYLIB_KEY_MAPPINGS[e.code]);
+    PressedKeyState[RAYLIB_KEY_MAPPINGS[e.code]] = true;
+    console.log(PressedKeyState);
   };
   const keyUp = (e) => {
     currentPressedKeyState.delete(RAYLIB_KEY_MAPPINGS[e.code]);
