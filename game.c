@@ -274,7 +274,20 @@ int main(){
     //--------------------------------------------------------------------------------------
     // saving the game stat
     saveGame(player, camera);
-
+    UnloadMusicStream(mainSong);   // Unload music stream buffers from RAM
+    UnloadTexture(terrain);  // Unload terrain texture
+    UnloadTexture(idle.leftAnimationTexture);   // Unload animation texture
+    UnloadTexture(idle.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(run.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(run.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(jump.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(jump.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(fall.rightAnimationTexture);   // Unload animation texture
+    UnloadTexture(fall.leftAnimationTexture);   // Unload animation texture
+    UnloadTexture(bg);   // Unload bg texture
+    UnloadTexture(bg1);   // Unload bg1 texture
+    UnloadTexture(bg2);   // Unload bg2 texture
+    CloseAudioDevice(); 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
     return 0;
