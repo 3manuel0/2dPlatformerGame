@@ -411,7 +411,7 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     IsMouseButtonPressed: (key) => {
       return currentPressedMouseKeyState.has(key);
     },
-    loadGame: (player_ptr, camera_ptr) => {
+    loadSavedGame: (player_ptr, camera_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
 
       // ----changing wasm's memory to the saved values------

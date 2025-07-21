@@ -69,11 +69,13 @@ void takeDamage(u32 *hp, u32 dmg);
 void saveGame(Player player, Camera2D camera);
 
 // load game
-void loadGame(Player* player, Camera2D* camera);
+void loadSavedGame(Player* player, Camera2D* camera);
 
 // reset the game
 void resetGame();
 
 void DrawGameOver(Color color);
+
+void DrawPlatformsAndBG();
 
 #endif

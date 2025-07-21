@@ -3,7 +3,7 @@
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
-Rectangle platforms[] = {
+static Rectangle platforms[] = {
         {0,550,400, 400},
         {600,650,400, 400},
         {1200,650,400, 400},
@@ -20,35 +20,34 @@ Rectangle platforms[] = {
         {12400,650,1000, 400},
         {13800,650,1000, 400},    
 };
-u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
-Player player = {0};
-Texture2D terrain = {0};
-Texture2D bg = {0};
-Texture2D bg1 = {0};
-Texture2D bg2 = {0};
-Texture2D playerIcon = {0};
-Camera2D camera = {{0, 0}, {0, 1.0}, 0, 1.0};
-Vector2 mouse = {0};
-Rectangle spriteRect = {0};
-Animation idle = {0};
-Animation run = {0};
-Animation jump = {0};
-Animation fall = {0};
+static u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
+static Player player = {0};
+static Texture2D terrain = {0};
+static Texture2D bg = {0};
+static Texture2D bg1 = {0};
+static Texture2D bg2 = {0};
+static Texture2D playerIcon = {0};
+static Camera2D camera = {{0, 0}, {0, 1.0}, 0, 1.0};
+static Vector2 mouse = {0};
+static Animation idle = {0};
+static Animation run = {0};
+static Animation jump = {0};
+static Animation fall = {0};
 // Animation attack = {0};
-u8 numberOfFrames = 0;
-bool gameOver = false;
+static u8 numberOfFrames = 0;
+static bool gameOver = false;
 // f32 framDelay = 0;
-f32 frameDelayCounter = 0;
+static f32 frameDelayCounter = 0;
 f32 saveDelay = 0;
-Rectangle healthBar ;
-Rectangle healthPoints ;
-Rectangle hitBox;
-Color hpColor ;
-u16  fullHp ;
-f32 hpConv ;
-Music mainSong = {0};
-u8 special_keys[4] = {0, 0, 0, 0};
-u16 speed = 500;
+static Rectangle healthBar ;
+static Rectangle healthPoints ;
+static Rectangle hitBox;
+static Color hpColor ;
+static u16  fullHp ;
+static f32 hpConv ;
+static Music mainSong = {0};
+static u8 special_keys[4] = {0, 0, 0, 0};
+static u16 speed = 500;
 
 void GameInit(){
     #ifndef PLATFORM_WEB
@@ -72,22 +71,16 @@ void GameInit(){
     bg1 = LoadTexture("assets/bg/BG_2.png");
     bg2 = LoadTexture("assets/bg/BG_3.png");
     playerIcon = LoadTexture("assets/icons/Warrior_icont.png");
-    spriteRect = player.playerRect;
-    spriteRect = player.playerRect;
     healthBar = (Rectangle) {34, 10, 300, 30};
     healthPoints = (Rectangle) {healthBar.x, healthBar.y, 300, healthBar.height};
     hpColor = GREEN;
-    if(player.healthPoints <= 45 * fullHp / 100){ 
-        hpColor = YELLOW;
-    }else if(player.healthPoints <= 30 * fullHp / 100){
-        hpColor = RED;
-    }
     hpConv = healthBar.width / player.healthPoints;
-    loadGame(&player, &camera);
+    loadSavedGame(&player, &camera);
+    // resetting here for wasm sake no need to write the same thing in js
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     SetMasterVolume(0.05);
 }
 
@@ -138,121 +131,100 @@ void GameFrame(){
         // chek if one of two points (left foot of the sprite, right foot of the sprite) is touching a platform
         if(CheckCollisionRecs(hitBox, platforms[i]) && hitBox.y - hitBox.height <= platforms[i].y){
             player.velocity.y = 0;
-            player.playerRect.y = platforms[i].y - spriteRect.height;
+            player.playerRect.y = platforms[i].y - player.playerRect.height;
             player.onGround = true;
             break;
         }
     }
-        if(IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)){
-            if(player.playerRect.x >= screenWidth / 2){
-                camera.offset.x -= player.velocity.x;
-                player.orientation = RIGHT;
-                for(u16 i = 0; i <  platformsCount; i++){
-                    platforms[i].x -= player.velocity.x;
-                }      
-            } else {
-                player.orientation = RIGHT;
-                player.playerRect.x += player.velocity.x ;
-            }
-            player.currentTexture =run.rightAnimationTexture;
-            numberOfFrames = run.numOfFrames;
-        }else if(IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)){
-            if(player.playerRect.x >= (screenWidth / 2) || platforms[0].x >= -5){
-                // printf("%f\n",player.playerRect.x);
-                if(player.playerRect.x +  (player.playerRect.width / 2) - 20 >= 0){
-                    player.playerRect.x -= player.velocity.x ;
-                    player.orientation = LEFT;
-                }
-            } else {
+    if(IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)){
+        if(player.playerRect.x >= screenWidth / 2){
+            camera.offset.x -= player.velocity.x;
+            player.orientation = RIGHT;
+            for(u16 i = 0; i <  platformsCount; i++){
+                platforms[i].x -= player.velocity.x;
+            }      
+        } else {
+            player.orientation = RIGHT;
+            player.playerRect.x += player.velocity.x ;
+        }
+        player.currentTexture =run.rightAnimationTexture;
+        numberOfFrames = run.numOfFrames;
+    }else if(IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)){
+        if(player.playerRect.x >= (screenWidth / 2) || platforms[0].x >= -5){
+            // printf("%f\n",player.playerRect.x);
+            if(player.playerRect.x +  (player.playerRect.width / 2) - 20 >= 0){
+                player.playerRect.x -= player.velocity.x ;
                 player.orientation = LEFT;
-                camera.offset.x += player.velocity.x;
-                for(u16 i = 0; i <  platformsCount; i++){
-                    platforms[i].x += player.velocity.x ;
-                }                   
             }
-            player.currentTexture = run.leftAnimationTexture;
-            numberOfFrames = run.numOfFrames;
-            // player.playerRect.x -= player.velocity.x;
+        } else {
+            player.orientation = LEFT;
+            camera.offset.x += player.velocity.x;
+            for(u16 i = 0; i <  platformsCount; i++){
+                platforms[i].x += player.velocity.x ;
+            }                   
         }
-        // else if(IsKeyDown(KEY_E)){
-        //     numberOfFrames = attack.numOfFrames;
-        //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
-        // }
-        player.velocity.y += Gravity * dt;
-        if (special_keys[0] && special_keys[1] && special_keys[2]) {
-            player.velocity.y = 0.0;
-            // printf("Activated: %f \n",player.velocity.y);
-            speed  = 2500;
+        player.currentTexture = run.leftAnimationTexture;
+        numberOfFrames = run.numOfFrames;
+        // player.playerRect.x -= player.velocity.x;
+    }
+    // else if(IsKeyDown(KEY_E)){
+    //     numberOfFrames = attack.numOfFrames;
+    //     player.currentTexture = player.orientation == RIGHT ?  attack.rightAnimationTexture : attack.leftAnimationTexture;
+    // }
+    player.velocity.y += Gravity * dt;
+    if (special_keys[0] && special_keys[1] && special_keys[2]) {
+        player.velocity.y = 0.0;
+        // printf("Activated: %f \n",player.velocity.y);
+        speed  = 2500;
+    }
+    if(IsKeyPressed(KEY_LEFT_ALT)){
+        // printf("pressed %d %d %d\n",special_keys[0], special_keys[1], special_keys[3]);
+        special_keys[special_keys[3]] = 1;
+        if(special_keys[3] < 3)
+            special_keys[3] ++;
+    }
+    if(IsKeyPressed(KEY_LEFT_CONTROL)){
+        for(u8 i = 0; i < 4; i++){
+            special_keys[i] = 0;
         }
-        if(IsKeyPressed(KEY_LEFT_ALT)){
-            // printf("pressed %d %d %d\n",special_keys[0], special_keys[1], special_keys[3]);
-            special_keys[special_keys[3]] = 1;
-            if(special_keys[3] < 3)
-                special_keys[3] ++;
+        speed = 500;
+    }
+    if(player.onGround){
+        if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
+            player.velocity.y -= 410;
+            player.onGround = false;
         }
-        if(IsKeyPressed(KEY_LEFT_CONTROL)){
-            for(u8 i = 0; i < 4; i++){
-                special_keys[i] = 0;
-            }
-            speed = 500;
-        }
-        if(player.onGround){
-            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE)){
-                player.velocity.y -= 410;
-                player.onGround = false;
-            }
-        }
-        if(!player.onGround){
-            numberOfFrames = jump.numOfFrames;
-            // player.frameIndex = 0;
-            player.currentTexture = player.orientation == RIGHT ?  jump.rightAnimationTexture : jump.leftAnimationTexture;
-        }
-        if(!player.onGround && player.velocity.y > 0){
-            numberOfFrames = fall.numOfFrames;
-            // player.frameIndex = 0;
-            player.currentTexture = player.orientation == RIGHT ?  fall.rightAnimationTexture : fall.leftAnimationTexture;
-        }
-        if(player.healthPoints <= 45 * fullHp / 100){ 
-            hpColor = YELLOW;
-        }
-        if(player.healthPoints <= 30 * fullHp / 100){
-            hpColor = RED;
-        }
-
+    }
+    if(!player.onGround){
+        numberOfFrames = jump.numOfFrames;
+        // player.frameIndex = 0;
+        player.currentTexture = player.orientation == RIGHT ?  jump.rightAnimationTexture : jump.leftAnimationTexture;
+    }
+    if(!player.onGround && player.velocity.y > 0){
+        numberOfFrames = fall.numOfFrames;
+        // player.frameIndex = 0;
+        player.currentTexture = player.orientation == RIGHT ?  fall.rightAnimationTexture : fall.leftAnimationTexture;
+    }
+    if(player.healthPoints <= 45 * fullHp / 100){ 
+        hpColor = YELLOW;
+    }
+    if(player.healthPoints <= 30 * fullHp / 100){
+        hpColor = RED;
+    }
+    if(player.healthPoints <= 0){
+        gameOver = true;
+    }
     BeginDrawing();
-    ClearBackground(WHITE);
     if(gameOver){
-        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.3, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.3)  + 1000, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.2, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.1, -30}, 0, 2.0, WHITE);
-        for(u16 i = 0; i < platformsCount; i++){
-            DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
-        }
+        DrawPlatformsAndBG();
         DrawGameOver(WHITE);
     }else{
-        DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.05, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.05)  + 1000, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.15 - 600, -30}, 0, 2.0, WHITE);
-        DrawTextureEx(bg, (Vector2){camera.offset.x * 0.25, -30}, 0, 2.0, WHITE);
-        DrawRectangleRec(healthBar, RAYWHITE);
-        DrawRectangleRec(healthPoints, hpColor);
-        DrawRectangleLinesEx(healthBar, 3, GRAY);
-        DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
-
-        for(u16 i = 0; i < platformsCount; i++){
-
-            DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
-
-        }
+        DrawPlatformsAndBG();
         //DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
         //DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLACK);
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
         DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
         DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
-    }
-    if(player.healthPoints <= 0){
-        gameOver = true;
     }
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
@@ -348,7 +320,23 @@ void resetGame() {
     }
     camera = (Camera2D){0};
 }
+void DrawPlatformsAndBG(){
+    ClearBackground(WHITE);
+    DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.05, -30}, 0, 2.0, WHITE);
+    DrawTextureEx(bg2, (Vector2){(camera.offset.x * 0.05)  + 1000, -30}, 0, 2.0, WHITE);
+    DrawTextureEx(bg1, (Vector2){camera.offset.x * 0.15 - 600, -30}, 0, 2.0, WHITE);
+    DrawTextureEx(bg, (Vector2){camera.offset.x * 0.25, -30}, 0, 2.0, WHITE);
+    DrawRectangleRec(healthBar, RAYWHITE);
+    DrawRectangleRec(healthPoints, hpColor);
+    DrawRectangleLinesEx(healthBar, 3, GRAY);
+    DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
 
+    for(u16 i = 0; i < platformsCount; i++){
+
+        DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
+
+    }
+}
 #ifndef PLATFORM_WEB
 
 // save the player's position and the camera postion to a file as binary values
@@ -362,7 +350,7 @@ void saveGame(Player player, Camera2D camera){
 }
 
 // load the save from the save.sav file
-void loadGame(Player* player, Camera2D* camera){
+void loadSavedGame(Player* player, Camera2D* camera){
     float data[3];
     u32 hp;
     FILE * fptr = fopen("save.sav", "rb");
@@ -376,5 +364,6 @@ void loadGame(Player* player, Camera2D* camera){
     player->healthPoints = hp;
     printf("%f %f %f %d php: %d",data[0], data[1], data[2], hp, player->healthPoints);
 }
+
 
 #endif
