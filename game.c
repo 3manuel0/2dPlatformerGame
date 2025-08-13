@@ -3,6 +3,7 @@
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
+// TODO add upward platforms, add dashes
 static Rectangle platforms[] = {
         {0,550,400, 400},
         {600,650,400, 400},

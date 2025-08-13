@@ -304,37 +304,65 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     printf: (str_ptr, args_ptrs) => {
       const buffer = wasm.instance.exports.memory.buffer;
       const str = get_str(str_ptr);
+      let f_str = "";
       let args = [];
       let argsIndex = 0;
       for (let i = 0; i < str.length; i++) {
         if (str[i] === "%") {
           switch (str[i + 1]) {
             case "f":
-              args.push(new Float64Array(buffer, args_ptrs + argsIndex, 1)[0]);
-              argsIndex += 8;
+              let float = new Float32Array(buffer, args_ptrs + argsIndex, 1)[0];
+              args.push(float);
+              f_str += float;
+              argsIndex += 4;
+              i += 2;
               break;
             case "d":
-              args.push(new Int32Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              let int = new Int32Array(buffer, args_ptrs + argsIndex, 1)[0];
+              args.push(int);
+              f_str += int;
               argsIndex += 4;
+              i += 2;
               break;
             case "u":
-              args.push(new Uint32Array(buffer, args_ptrs + argsIndex, 1)[0]);
-              argsIndex += 8;
+              let uint = new Uint32Array(buffer, args_ptrs + argsIndex, 1)[0];
+              args.push(uint);
+              f_str += uint;
+              argsIndex += 4;
+              i += 2;
               break;
             case "s":
-              args.push(get_str(args_ptrs + argsIndex));
-              argsIndex += str_len(args_ptrs + argsIndex);
+              const str_ptr = new Uint32Array(
+                buffer,
+                args_ptrs + argsIndex,
+                1
+              )[0];
+              let str = get_str(str_ptr);
+              args.push(str);
+              f_str += str;
+              argsIndex += 4;
+              i += 2;
               break;
             case "i":
-              args.push(new Int32Array(buffer, args_ptrs + argsIndex, 1)[0]);
+              let iint = new Int32Array(buffer, args_ptrs + argsIndex, 1)[0];
+              args.push(iint);
+              f_str += iint;
               argsIndex += 4;
+              i += 2;
+              break;
+            case "p":
+              let ptr = args_ptrs + argsIndex;
+              args.push(ptr);
+              f_str += ptr;
+              argsIndex += 4;
+              i += 2;
               break;
           }
         }
+        if (str[i] != undefined) f_str += str[i];
       }
-      // const [arg1, arg2] = new Float64Array(buffer, args_ptrs[0], 2);
-      console.log(str);
-      console.log(...args);
+      console.log(f_str);
+      // console.log(get_str(args_ptrs), new Uint32Array(buffer, args_ptrs, 1));
     },
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
