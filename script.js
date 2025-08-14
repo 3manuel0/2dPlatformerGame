@@ -154,23 +154,10 @@ let currentMousePosition = { x: 0, y: 0 };
 const startingScreen = document.getElementById("strating-screen");
 
 // getting Cstring length in memory
-const str_len = (mem, str_ptr) => {
-  let len = 0;
-  while (mem[str_ptr] != 0) {
-    len++;
-    str_ptr++;
-  }
-  return len;
-};
+const str_len = wasmlib.str_len;
 
 // getting a Cstring from wasm memory
-const get_str = (str_ptr) => {
-  const buffer = wasm.instance.exports.memory.buffer;
-  const mem = new Uint8Array(buffer);
-  const len = str_len(mem, str_ptr);
-  const str_bytes = new Uint8Array(buffer, str_ptr, len);
-  return new TextDecoder().decode(str_bytes);
-};
+const get_str = wasmlib.get_str;
 
 // Instintiating webassembly
 WebAssembly.instantiateStreaming(fetch("game.wasm"), {
@@ -296,74 +283,11 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     },
     SetMasterVolume: (volume) => {
       audio.volume = volume;
-      console.log(volume);
     },
     PlayMusicStream: (ptr) => {
       audio.loop = true;
     },
-    printf: (str_ptr, args_ptrs) => {
-      const buffer = wasm.instance.exports.memory.buffer;
-      const str = get_str(str_ptr);
-      let f_str = "";
-      let args = [];
-      let argsIndex = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === "%") {
-          switch (str[i + 1]) {
-            case "f":
-              let float = new Float32Array(buffer, args_ptrs + argsIndex, 1)[0];
-              args.push(float);
-              f_str += float;
-              argsIndex += 4;
-              i += 2;
-              break;
-            case "d":
-              let int = new Int32Array(buffer, args_ptrs + argsIndex, 1)[0];
-              args.push(int);
-              f_str += int;
-              argsIndex += 4;
-              i += 2;
-              break;
-            case "u":
-              let uint = new Uint32Array(buffer, args_ptrs + argsIndex, 1)[0];
-              args.push(uint);
-              f_str += uint;
-              argsIndex += 4;
-              i += 2;
-              break;
-            case "s":
-              const str_ptr = new Uint32Array(
-                buffer,
-                args_ptrs + argsIndex,
-                1
-              )[0];
-              let str = get_str(str_ptr);
-              args.push(str);
-              f_str += str;
-              argsIndex += 4;
-              i += 2;
-              break;
-            case "i":
-              let iint = new Int32Array(buffer, args_ptrs + argsIndex, 1)[0];
-              args.push(iint);
-              f_str += iint;
-              argsIndex += 4;
-              i += 2;
-              break;
-            case "p":
-              let ptr = args_ptrs + argsIndex;
-              args.push(ptr);
-              f_str += ptr;
-              argsIndex += 4;
-              i += 2;
-              break;
-          }
-        }
-        if (str[i] != undefined) f_str += str[i];
-      }
-      console.log(f_str);
-      // console.log(get_str(args_ptrs), new Uint32Array(buffer, args_ptrs, 1));
-    },
+    printf: wasmlib.printf,
     InitAudioDevice: () => {},
     DrawTextureEx: (texture_ptr, vec2_pos_ptr, rotation, scale, color_ptr) => {
       const buffer = wasm.instance.exports.memory.buffer;
@@ -486,14 +410,12 @@ WebAssembly.instantiateStreaming(fetch("game.wasm"), {
     // e.preventDefault();
     currentPressedKeyState.add(RAYLIB_KEY_MAPPINGS[e.code]);
     PressedKeyState[RAYLIB_KEY_MAPPINGS[e.code]] = true;
-    console.log(PressedKeyState);
   };
   const keyUp = (e) => {
     currentPressedKeyState.delete(RAYLIB_KEY_MAPPINGS[e.code]);
   };
   const MouseDown = (e) => {
     currentPressedMouseKeyState.add(e.button);
-    console.log(e.button);
   };
   // GameInit func from wasm (see the C code for function)
   GameInit();
