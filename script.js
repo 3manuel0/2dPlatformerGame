@@ -1,17 +1,3 @@
-// thanks to Tsoding(Alexey Kutepov) for this proxy
-function make_environment(env) {
-  return new Proxy(env, {
-    get(target, prop, receiver) {
-      if (env[prop] !== undefined) {
-        return env[prop].bind(env);
-      }
-      return (...args) => {
-        throw new Error(`NOT IMPLEMENTED: ${prop} ${args}`);
-      };
-    },
-  });
-}
-
 // mapping keys to work with the raylib KeyboardKey enum
 const RAYLIB_KEY_MAPPINGS = {
   Space: 32,
@@ -162,7 +148,7 @@ const get_str = wasmlib.get_str;
 // Instintiating webassembly
 WebAssembly.instantiateStreaming(fetch("game.wasm"), {
   // Raylib function in js
-  env: make_environment({
+  env: wasmlib.make_environment({
     InitWindow: (width, height, str_ptr) => {
       canvas.width = width;
       canvas.height = height;
