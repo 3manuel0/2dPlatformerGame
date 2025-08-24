@@ -19,7 +19,8 @@ static Rectangle platforms[] = {
         {10400,650,1000, 400},
         {11400,650,1000, 400},
         {12400,650,1000, 400},
-        {13800,650,1000, 400},    
+        {13800,650,1000, 400},
+        {15200,650,1000, 400},    
 };
 static u8 platformsCount = sizeof(platforms) / sizeof(Rectangle);
 static Player player = {0};
@@ -81,7 +82,7 @@ void GameInit(){
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
-    SetTargetFPS(60);
+    SetTargetFPS(120);
     SetMasterVolume(0.05);
 }
 
@@ -281,8 +282,8 @@ Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
 
 
 void DrawGameOver(Color color){
-    // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2 - 150, 300, 30, color); 
-    // DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2, 300, 30, color); 
+    //DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2 - 150, 300, 30, color); 
+    //DrawRectangle(screenWidth/2 - (300 / 2), screenHeight/2, 300, 30, color); 
     Rectangle button = {screenWidth/2 - (100.0 / 2), screenHeight/2 + 150, 100, 30};
     DrawRectangleRec(button, color); 
     DrawText("Restart", button.x, button.y + 5, 16, BLACK);
@@ -321,6 +322,8 @@ void resetGame() {
     }
     camera = (Camera2D){0};
 }
+
+// Draw Platforms And Backgrounds
 void DrawPlatformsAndBG(){
     ClearBackground(WHITE);
     DrawTextureEx(bg2, (Vector2){camera.offset.x * 0.05, -30}, 0, 2.0, WHITE);
@@ -338,8 +341,8 @@ void DrawPlatformsAndBG(){
 
     }
 }
-#ifndef PLATFORM_WEB
 
+#ifndef PLATFORM_WEB
 // save the player's position and the camera postion to a file as binary values
 void saveGame(Player player, Camera2D camera){
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};
@@ -365,6 +368,5 @@ void loadSavedGame(Player* player, Camera2D* camera){
     player->healthPoints = hp;
     printf("%f %f %f %d php: %d",data[0], data[1], data[2], hp, player->healthPoints);
 }
-
 
 #endif
