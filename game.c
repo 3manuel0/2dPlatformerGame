@@ -82,7 +82,7 @@ void GameInit(){
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
-    SetTargetFPS(120);
+    SetTargetFPS(240);
     SetMasterVolume(0.05);
 }
 
@@ -177,7 +177,7 @@ void GameFrame(){
     if (special_keys[0] && special_keys[1] && special_keys[2]) {
         player.velocity.y = 0.0;
         // printf("Activated: %f \n",player.velocity.y);
-        speed  = 2500;
+        speed  = 2800;
     }
     if(IsKeyPressed(KEY_LEFT_ALT)){
         // printf("pressed %d %d %d\n",special_keys[0], special_keys[1], special_keys[3]);
@@ -225,8 +225,8 @@ void GameFrame(){
         //DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
         //DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLACK);
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
-        DrawText("Use AS to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
-        DrawText("Or arrows to move and spaced to jump", 20 + camera.offset.x, 220, 16, BLACK);
+        DrawText("Use A/D to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
+        DrawText("Or arrows to move and space to jump", 20 + camera.offset.x, 220, 16, BLACK);
     }
     DrawFPS(screenWidth - 90 , 0);
     EndDrawing();
@@ -336,7 +336,6 @@ void DrawPlatformsAndBG(){
     DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
 
     for(u16 i = 0; i < platformsCount; i++){
-
         DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
 
     }

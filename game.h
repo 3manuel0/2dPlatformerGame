@@ -41,6 +41,7 @@ typedef enum Orientation{
   LEFT,
 }Orientation;
 
+
 // player struct
 typedef struct Player {
   Rectangle playerRect;
