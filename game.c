@@ -290,7 +290,7 @@ void DrawGameOver(Color color){
     DrawText("Game Over!", screenWidth/2 - (100.0 / 2), screenHeight/2, 32, BLACK);
     if(CheckCollisionPointRec(mouse, button)){
         if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            DrawText("Anger Builds", screenWidth/2 , screenHeight/2, 16, BLACK);
+            // DrawText("Anger Builds", screenWidth/2 , screenHeight/2, 16, BLACK);
             player.healthPoints = 1000;
             hpColor = GREEN;
             gameOver = false;
