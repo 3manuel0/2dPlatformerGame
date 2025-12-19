@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2025 3manuel0
+ *
+ * You are free to view and explore the code, but copying,
+ * modifying, distributing, or using it in any form is
+ * strictly prohibited without my explicit permission.
+ */
 #ifndef TWOD_H_
 #define TWOD_H_
-#include "raylib.h" 
+#include "include/raylib.h"
 #include <stdint.h>
 #ifdef linux
 #endif
@@ -8,8 +15,6 @@
 #ifdef _WIN32
 #include "raylib.h"
 #endif
-
-
 
 #include <stdbool.h>
 
@@ -36,11 +41,10 @@ typedef struct Animation {
   u32 numOfFrames;
 } Animation;
 
-typedef enum Orientation{
-  RIGHT = 0, 
+typedef enum Orientation {
+  RIGHT = 0,
   LEFT,
-}Orientation;
-
+} Orientation;
 
 // player struct
 typedef struct Player {
@@ -56,21 +60,21 @@ typedef struct Player {
 
 typedef Player Enemy;
 
-
 // declaration of a function that create and return a player
 Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity);
 
 // declaration of a function that creates nad returns an animation
-Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, u8 numOfFrames);
+Animation createAnimation(Texture2D rightAnimationTexture,
+                          Texture2D leftAnimationTexture, u8 numOfFrames);
 
 // calculate and display dmg
 void takeDamage(u32 *hp, u32 dmg);
 
-// save game 
+// save game
 void saveGame(Player player, Camera2D camera);
 
 // load game
-void loadSavedGame(Player* player, Camera2D* camera);
+void loadSavedGame(Player *player, Camera2D *camera);
 
 // reset the game
 void resetGame();

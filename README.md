@@ -2,14 +2,13 @@
 
 ![game-screenshot](assets/gameScreenshots/screenshot.png)
 
-A 2D platformer game built with **Raylib** and compiled for **Linux**, **Windows**, and **WASM**.
+A 2D platformer game built with **Raylib** and can be compiled for **Linux**, **Windows**, and **Webassembly**.
 This is a simple project, where I compiled the C code with clang for wasm without using emscripten, Inspired by  
-[Tsoding's zozlib](https://github.com/tsoding/zozlib.js) The idea is to [Program in C for WebAssembly without Emscripten](https://surma.dev/things/c-to-webassembly/) and Using it for my **Raylib Game**.
+[Tsoding's zozlib](https://github.com/tsoding/zozlib.js) The idea is to [Program in C for WebAssembly without using Emscripten](https://surma.dev/things/c-to-webassembly/).
 
-The idea is to program in C for WebAssembly without Emscripten,
-it's a fun personal project of mine to try and make my **Raylib Game** work on web without needing to use Emscripten as it was a big learning experiance to try and implement the Raylib functions in **javascript** myself and Understand how **WASM32** works with javascript.
+Tt's a fun personal project of mine to try and make my **Raylib Game** work on web without needing to use Emscripten and Create my own raylib.js for using raylib with wasm [check my gamelib](https://github.com/3manuel0/gamelib), it was a big learning experiance to try and implement the Raylib functions in **javascript** myself and Understand how **WASM32** works with javascript.
 
-The web version, were I implemented the Raylib functions in JavaScript, is available separately in [raylib.js](https://github.com/3manuel0/gamelib) feel free to use it.
+Feel free to use my gamelib it's available separately in [raylib.js](https://github.com/3manuel0/gamelib).
 
 ### Created Using:
 
@@ -28,9 +27,10 @@ The web version, were I implemented the Raylib functions in JavaScript, is avail
 
 ## My Game's license:
 
-### ⛔ **No License – All Rights Reserved (2025).**
+You are free to view and explore the code.  
+Copying, modifying, distributing, or using it in any form is strictly prohibited without the explicit permission of the author.
 
-⚠️ You are free to view and explore the code, but copying, modifying, distributing, or using it in any form is **strictly prohibited** without my explicit permission.
+© 2025 3manuel0
 
 ## Raylib License:
 

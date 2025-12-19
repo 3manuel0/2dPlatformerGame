@@ -1,5 +1,11 @@
+/*
+ * Copyright (c) 2025 3manuel0
+ *
+ * You are free to view and explore the code, but copying,
+ * modifying, distributing, or using it in any form is
+ * strictly prohibited without my explicit permission.
+ */
 #include "game.h"
-#include <raylib.h>
 #ifndef PLATFORM_WEB
 #include <stdio.h>
 #endif
@@ -52,9 +58,9 @@ static u8 special_keys[4] = {0, 0, 0, 0};
 static u16 speed = 500;
 
 void GameInit(){
-    #ifndef PLATFORM_WEB
+    #ifndef PLATFORM_WEB 
         InitWindow(screenWidth, screenHeight, "my platformer game");
-    #else
+    #else // if compiling for web we use this function instead
         InitWindow(screenWidth, screenHeight, "my platformer game in wasm");
     #endif
     InitAudioDevice();
@@ -62,28 +68,37 @@ void GameInit(){
     PlayMusicStream(mainSong);
     player = createPlayer((Rectangle){0, 100, 64*2, 43*2}, (Vector2){64, 43},(Vector2){0 , 0});
     fullHp = player.healthPoints;
-    // creating animations
-    idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
-    run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
-    jump = createAnimation(LoadTexture( "assets/Jump/Warrior_Jump_sheet.png"), LoadTexture( "assets/Jump/Warrior_Jump_sheet_left.png"), 2);
-    fall = createAnimation(LoadTexture( "assets/Jump/Warrior_fall_sheet.png"), LoadTexture( "assets/Jump/Warrior_fall_sheet_left.png"), 2);
-    // attack = createAnimation(LoadTexture( "assets/Attack/Warrior_Attack_1-sheet.png"), LoadTexture( "assets/Attack/Warrior_Attack_1-sheet_left.png"), 11);
-    terrain = LoadTexture("assets/terrain/Terrain-and-Props.png");
-    bg = LoadTexture("assets/bg/BG_1.png");
-    bg1 = LoadTexture("assets/bg/BG_2.png");
-    bg2 = LoadTexture("assets/bg/BG_3.png");
-    playerIcon = LoadTexture("assets/icons/Warrior_icont.png");
+
+    {// creating animations
+        idle = createAnimation(LoadTexture("assets/idle/Warrior_Idle_sheet.png"), LoadTexture("assets/idle/Warrior_Idle_sheet_left.png"), 5);
+        run = createAnimation(LoadTexture( "assets/run/Warrior_Run_sheet.png"), LoadTexture( "assets/run/Warrior_Run_sheet_left.png"), 7);
+        jump = createAnimation(LoadTexture( "assets/Jump/Warrior_Jump_sheet.png"), LoadTexture( "assets/Jump/Warrior_Jump_sheet_left.png"), 2);
+        fall = createAnimation(LoadTexture( "assets/Jump/Warrior_fall_sheet.png"), LoadTexture( "assets/Jump/Warrior_fall_sheet_left.png"), 2);
+    }
+
+    {// loading textures
+        // attack = createAnimation(LoadTexture( "assets/Attack/Warrior_Attack_1-sheet.png"), LoadTexture( "assets/Attack/Warrior_Attack_1-sheet_left.png"), 11);
+        terrain = LoadTexture("assets/terrain/Terrain-and-Props.png");
+        bg = LoadTexture("assets/bg/BG_1.png");
+        bg1 = LoadTexture("assets/bg/BG_2.png");
+        bg2 = LoadTexture("assets/bg/BG_3.png");
+        playerIcon = LoadTexture("assets/icons/Warrior_icont.png"); 
+    }
+
     healthBar = (Rectangle) {34, 10, 300, 30};
     healthPoints = (Rectangle) {healthBar.x, healthBar.y, 300, healthBar.height};
     hpColor = GREEN;
     hpConv = healthBar.width / player.healthPoints;
+    // loading camera position and player position from file or local storage for web
     loadSavedGame(&player, &camera);
+
     // resetting here for wasm sake no need to write the same thing in js
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x += camera.offset.x;
     }
-    SetTargetFPS(240);
-    SetMasterVolume(0.05);
+
+    SetTargetFPS(60);
+    SetMasterVolume(0.04);
 }
 
 void GameFrame(){
@@ -95,7 +110,8 @@ void GameFrame(){
     player.currentTexture = idle.rightAnimationTexture;
     healthPoints.width = player.healthPoints * hpConv;
     // printf("%f\n", healthPoints.width);
-    #ifdef PLATFORM_WEB
+    #ifdef PLATFORM_WEB 
+        // save delay for web to not save to local storage each frame
         saveDelay += dt;
         if(saveDelay >= 1.0f){
             saveGame(player,  camera);
@@ -105,7 +121,7 @@ void GameFrame(){
     hitBox = player.orientation == RIGHT ? 
         (Rectangle){player.playerRect.x + (player.playerRect.width / 4) +15 , player.playerRect.y + player.playerRect.height - 10, 26, 10} 
         :(Rectangle){player.playerRect.x + (player.playerRect.width / 2) - 10, player.playerRect.y + player.playerRect.height - 10, 26, 10} ;
-
+    
     if(player.frameIndex >= numberOfFrames){
         // player.frameIndex %= numberOfFrames;
         player.frameIndex = 0;
@@ -138,6 +154,7 @@ void GameFrame(){
             break;
         }
     }
+
     if(IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)){
         if(player.playerRect.x >= screenWidth / 2){
             camera.offset.x -= player.velocity.x;
@@ -218,12 +235,15 @@ void GameFrame(){
     }
     BeginDrawing();
     if(gameOver){
+        // drawing platform and the background
         DrawPlatformsAndBG();
+        // drawing the game over layout
         DrawGameOver(WHITE);
     }else{
+        // drawing platform and the background
         DrawPlatformsAndBG();
-        //DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
-        //DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLACK);
+        // DrawRectangle(player.playerRect.x, player.playerRect.y, player.playerRect.width, player.playerRect.height, BLUE);
+        // DrawRectangle(hitBox.x, hitBox.y, hitBox.width, hitBox.height, BLACK);
         DrawTexturePro(player.currentTexture,(Rectangle) {player.spriteSize.x* player.frameIndex ,0, player.spriteSize.x, player.spriteSize.y}, player.playerRect,(Vector2){0, 0}, 0, WHITE);
         DrawText("Use A/D to move and W to jump", 20 + camera.offset.x, 200, 16, BLACK);
         DrawText("Or arrows to move and space to jump", 20 + camera.offset.x, 220, 16, BLACK);
@@ -268,7 +288,7 @@ int main(){
 }
 #endif
 
-// function to create/return a player
+// function to create and return a player
 Player createPlayer(Rectangle playerRect, Vector2 spritSize, Vector2 velocity) {
   return (Player){
       .playerRect = playerRect,
@@ -297,7 +317,8 @@ void DrawGameOver(Color color){
         }
     }
 }
-// function that creates/returns an animation
+
+// function that creates and returns an animation
 Animation createAnimation(Texture2D rightAnimationTexture, Texture2D leftAnimationTexture, u8 numOfFrames) {
   return (Animation){
       .rightAnimationTexture = rightAnimationTexture,
@@ -317,9 +338,11 @@ void takeDamage(u32 *hp, u32 dmg){
 
 // reset the game
 void resetGame() {
+    // resetting the platforms 
     for(u8 i = 0; i < platformsCount; i++){
         platforms[i].x -= camera.offset.x;
     }
+    // resetting the camera
     camera = (Camera2D){0};
 }
 
@@ -334,14 +357,17 @@ void DrawPlatformsAndBG(){
     DrawRectangleRec(healthPoints, hpColor);
     DrawRectangleLinesEx(healthBar, 3, GRAY);
     DrawTextureEx(playerIcon, (Vector2){0,0}, 0, 2.8, WHITE);        
-
+    
+    // drawing all the platforms
     for(u16 i = 0; i < platformsCount; i++){
         DrawTexturePro(terrain, (Rectangle) {99, 0, 25, 65}, platforms[i],(Vector2){0, 0}, 0, WHITE);
 
     }
 }
 
+// saveGame / loadSaveGame for native, for web check index.html script
 #ifndef PLATFORM_WEB
+
 // save the player's position and the camera postion to a file as binary values
 void saveGame(Player player, Camera2D camera){
     float data[] = {player.playerRect.x, player.playerRect.y, camera.offset.x};

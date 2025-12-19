@@ -1,8 +1,12 @@
 /* 
-this file was just the first version to write the raylib.js for my game.
-the full/latest version is in https://github.com/3manuel0/gamelib.
-this is just to see the ho the code works, it's not even included in the html
+########################################################################################
+#                                    Archived script                                   #
+# this file was just the first version that I used to write the raylib.js for my game. #
+# the full/latest version is in https://github.com/3manuel0/gamelib .                  #
+# this is just to see how the code works, it's not even included in the html           #
+########################################################################################
 */
+
 // mapping keys to work with the raylib KeyboardKey enum
 const RAYLIB_KEY_MAPPINGS = {
   Space: 32,

@@ -74,12 +74,13 @@
   "></script>
   <script src="https://cdn.jsdelivr.net/gh/3manuel0/gamelib/raylib.js"></script>
   <script>
+    // loading save from local storage of the browser
     const loadSave = (...args) => {
       const player_ptr = args[0];
       const camera_ptr = args[1];
       const buffer = wasm.instance.exports.memory.buffer;
 
-      // ----changing wasm's memory to the saved values------
+      // changing wasm's memory to the saved values
       new Float32Array(buffer, player_ptr, 1).set([
         localStorage.getItem("playerX"),
       ]);
@@ -97,6 +98,8 @@
         new Uint32Array(buffer, player_ptr + 16 + 16 + 4, 1).set([1000]);
       }
     };
+
+    // save game to the local storage of the browser for js
     const SaveGamejs = (...args) => {
       //player_ptr, camera_ptr
       const player_ptr = args[0];
