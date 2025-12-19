@@ -28,7 +28,7 @@ Feel free to use my gamelib it's available separately in [raylib.js](https://git
 ## My Game's license:
 
 You are free to view and explore the code.  
-Copying, modifying, distributing, or using it in any form is strictly prohibited without the explicit permission of the author.
+Copying, modifying, distributing, or using it in any form is strictly prohibited without my explicit permission.
 
 © 2025 3manuel0
 
